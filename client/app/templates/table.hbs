@@ -1,0 +1,13 @@
+{{name}}
+{{rowCount}}
+
+{{#each item in rowHeader}}
+  <li>Header: {{item}}</li>
+{{/each}}
+
+{{#each row in rowData}}
+{{_view.contentIndex}}
+    {{#each column in row}}
+      <li>Data: {{column}}</li>
+    {{/each}}
+{{/each}}

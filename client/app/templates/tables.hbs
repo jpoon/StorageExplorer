@@ -1,0 +1,11 @@
+<h2>{{name}}</h2>
+
+<div>Count: {{tablesCount}}</div>
+
+{{#each tableName in tables}}
+    {{#link-to 'table' tableName}}
+        <p>{{tableName}}</p>
+    {{/link-to}}
+{{/each}}
+
+{{outlet}}
