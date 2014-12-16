@@ -6,8 +6,9 @@
 /bin
 /obj
 
-*.swp
-~
+# visual studio
+*.suo
+*.sln
 
 # dependencies
 /node_modules
@@ -20,3 +21,7 @@
 /libpeerconnection.log
 npm-debug.log
 testem.log
+
+*.tmp
+*.swp
+~
