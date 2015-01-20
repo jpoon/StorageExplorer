@@ -6,6 +6,15 @@ export default Ember.ObjectController.extend({
   }.property('rows'),
 
   rowHeader: function(){
+    var header = {};
+
+    this.get('rows').forEach(function(row) {
+      Ember.$.map(row, function(value, key) {
+        header[key] = value;
+    })});
+
+    return Object.keys(header);
+
     return Ember.$.map(this.get('rows')[0], function(value, key) {
         return [key];
     });
