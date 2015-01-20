@@ -9,6 +9,7 @@
 # visual studio
 *.suo
 *.sln
+*.dat
 
 # dependencies
 /node_modules

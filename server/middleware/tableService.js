@@ -5,14 +5,14 @@ module.exports = function (req, res, next) {
     var key = process.env.AZURE_STORAGE_ACCESS_KEY || req.query["key"];
 
     if (account === undefined && key === undefined) {
-        return res.send(400);
+        return next({ status: 400 });
     }
     
     try {
         req.tableService = azure.createTableService(account, key);
     }
 	catch (err) {
-        return res.send(403);
+        return next({ status: 403 });
     }
     
     next();

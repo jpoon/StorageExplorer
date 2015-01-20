@@ -1,11 +1,18 @@
-<h2>{{name}}</h2>
+    {{name}}
+    <div>Count: {{tablesCount}}</div>
 
-<div>Count: {{tablesCount}}</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Tables
+    </div>
 
-{{#each tableName in tables}}
-    {{#link-to 'table' tableName}}
-        <p>{{tableName}}</p>
-    {{/link-to}}
-{{/each}}
+    <div class="panel-body">
+        {{#each tableName in tables}}
+            {{#link-to 'table' tableName}}
+                <h4>{{tableName}}</h4>
+            {{/link-to}}
+        {{/each}}
+    </div>
+</div>
 
 {{outlet}}

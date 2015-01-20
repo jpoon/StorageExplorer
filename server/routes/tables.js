@@ -9,7 +9,7 @@ router.get('/', function (req, res) {
     req.tableService.listTablesSegmented(null, function (error, result, response) {
         if (error) {
             console.log(error);
-            res.send(500);
+            return next({ status: 500, message: error });
         }
 
         var tables = [];
@@ -19,7 +19,7 @@ router.get('/', function (req, res) {
             tables.push(tableName);
         }
 
-        res.json({
+        res.status(200).json({
             name: req.tableService.storageAccount,
             tables: tables,
         });
@@ -30,7 +30,7 @@ router.get('/:tableName', function (req, res, next) {
     req.tableService.queryEntities(req.params.tableName, null, null, function (error, result, response) {
         if (error) {
             console.log(error);
-            res.send(500);
+            return next({ status: 500, message: error });
         }
         
         var rows = []
@@ -50,7 +50,7 @@ router.get('/:tableName', function (req, res, next) {
             rows.push(parsedRow);
         }
 
-        res.json({
+        res.status(200).json({
             name: req.params.tableName,
             rows: rows
         });
