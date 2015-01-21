@@ -20,10 +20,11 @@ export default Ember.Controller.extend({
 
     actions: {
         load: function () {
-            var account = this.get('storageAccountName'),
+            var name = this.get('storageAccountName'),
                 key = this.get('storageAccountKey');
 
             this.set('showProgress', true);
+            this.transitionToRoute('tables', name, key); 
         }
     }
 });

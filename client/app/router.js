@@ -6,7 +6,7 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-    this.resource("tables", { path: '/' }, function() {
+    this.resource("tables", { path: '/tables/:storageAccountName/:storageAccountKey' }, function() {
         this.resource("table", { path: "/:table_name" });
     });
 });
