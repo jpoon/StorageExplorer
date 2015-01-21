@@ -5,6 +5,8 @@ export default Ember.Controller.extend({
       this._super(); 
     },
 
+    showProgress: false,
+
     loadDisabled: function() {
       var account = this.get('storageAccountName'),
           key = this.get('storageAccountKey');
@@ -20,6 +22,8 @@ export default Ember.Controller.extend({
         load: function () {
             var account = this.get('storageAccountName'),
                 key = this.get('storageAccountKey');
+
+            this.set('showProgress', true);
         }
     }
 });

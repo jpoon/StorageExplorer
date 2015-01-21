@@ -16,6 +16,12 @@
             <button {{action 'load'}} {{bind-attr disabled=loadDisabled}} class="btn btn-primary btn-raised">Load</button>
         </div>
     </div>
+    {{#if showProgress}}
+	<div class="progress progress-striped active">
+	  <div class="progress-bar" style="width: 100%"></div>
+	</div>
+	{{/if}}
 </div>
+
 
 {{outlet}}
