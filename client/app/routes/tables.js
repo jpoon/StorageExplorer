@@ -9,7 +9,6 @@ export default Ember.Route.extend({
         if (!name || !key) {
             this.transitionTo('application');
         }
-
     },
 
     model: function() {
@@ -19,7 +18,7 @@ export default Ember.Route.extend({
 
         var url = config.APP.apiHost + '/tables?account=' + storageAccountName + '&key=' + storageAccountKey;
         Ember.Logger.info('url', url);
-
+        
         var data = Ember.$.getJSON(url, function() { 
             that.controllerFor('application').set('showProgress', false);
         });
@@ -27,7 +26,7 @@ export default Ember.Route.extend({
         Ember.run.later(function(){
             that.controllerFor('application').set('showProgress', false);
             data.abort();
-        }, 2000);
+        }, 5000);
 
         return data;
     },
