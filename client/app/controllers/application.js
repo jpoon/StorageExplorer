@@ -8,23 +8,39 @@ export default Ember.Controller.extend({
     showProgress: false,
 
     loadDisabled: function() {
-      var account = this.get('storageAccountName'),
-          key = this.get('storageAccountKey');
+      var account = this.get('accountName'),
+          key = this.get('accountKey');
 
       if (account && key) {
         return false;
       }
 
       return true;
-    }.property('storageAccountName', 'storageAccountKey'),
+    }.property('accountName', 'accountKey'),
+
+    storageAccountName: function() {
+      var name = this.get('accountName');
+
+      if (!name) {
+        return;
+      }
+
+      return encodeURIComponent(this.get('accountName'));
+    }.property('accountName'),
+
+    storageAccountKey: function() {
+      var key = this.get('accountKey');
+
+      if (!key) {
+        return;
+      }
+
+      return encodeURIComponent(key);
+    }.property('accountKey'),
 
     actions: {
         load: function () {
-            var name = this.get('storageAccountName'),
-                key = this.get('storageAccountKey');
-
-            this.set('showProgress', true);
-            this.transitionToRoute('tables', name, key); 
+            this.transitionToRoute('tables'); 
         }
     }
 });

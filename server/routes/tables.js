@@ -5,7 +5,7 @@
 
 router.use(tableServiceMiddleware);
 
-router.get('/', function (req, res) {
+router.get('/', function (req, res, next) {
     req.tableService.listTablesSegmented(null, function (error, result, response) {
         if (error) {
             console.log(error);
@@ -13,11 +13,10 @@ router.get('/', function (req, res) {
         }
 
         var tables = [];
-
-        for (var index = 0; index < result.entries.length; index++) {
-            var tableName = result.entries[index];
+        
+        result.entries.forEach(function (tableName) {
             tables.push(tableName);
-        }
+        });
 
         res.status(200).json({
             name: req.tableService.storageAccount,
@@ -27,6 +26,10 @@ router.get('/', function (req, res) {
 });
 
 router.get('/:tableName', function (req, res, next) {
+    if (!req.params.tableName) {
+        return next({ status: 400 });
+    }
+
     req.tableService.queryEntities(req.params.tableName, null, null, function (error, result, response) {
         if (error) {
             console.log(error);
@@ -35,9 +38,7 @@ router.get('/:tableName', function (req, res, next) {
         
         var rows = []
         
-        for (var index = 0; index < result.entries.length; index++) {
-            var row = result.entries[index];
-            
+        result.entries.forEach(function (row) {
             var parsedRow = {};
             for (var propertyName in row) {
                 var propertyValue = row[propertyName]._;
@@ -46,9 +47,9 @@ router.get('/:tableName', function (req, res, next) {
                     parsedRow[propertyName] = propertyValue;
                 }
             }
-
+            
             rows.push(parsedRow);
-        }
+        });
 
         res.status(200).json({
             name: req.params.tableName,

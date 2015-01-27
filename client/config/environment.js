@@ -17,16 +17,16 @@ module.exports = function(environment) {
       // Here you can pass flags/options to your application instance
       // when it is created
 
-      apiHost: 'http://localhost:1337',
+      apiHost: 'http://localhost:3000',
     }
   };
 
   if (environment === 'development') {
-    // ENV.APP.LOG_RESOLVER = true;
-    // ENV.APP.LOG_ACTIVE_GENERATION = true;
-    // ENV.APP.LOG_TRANSITIONS = true;
-    // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
-    // ENV.APP.LOG_VIEW_LOOKUPS = true;
+    ENV.APP.LOG_RESOLVER = true;
+    ENV.APP.LOG_ACTIVE_GENERATION = true;
+    ENV.APP.LOG_TRANSITIONS = true;
+    ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
+    ENV.APP.LOG_VIEW_LOOKUPS = true;
   }
 
   if (environment === 'test') {
@@ -42,8 +42,13 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-    ENV.APP.apiHost = 'http://localhost:1337';
+    ENV.APP.apiHost = 'http://localhost:3000';
   }
+
+  ENV.contentSecurityPolicy = {
+    'img-src': "'self' data:",
+    'connect-src': "'self' http://localhost:3000"
+  };
 
   return ENV;
 };

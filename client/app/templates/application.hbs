@@ -6,15 +6,17 @@
         <span>Storage Account Information</span>
     </div>
     <div class="panel-body">
-        <div class="form-group">
-            {{input value=storageAccountName type="text" class="form-control floating-label" placeholder="storage account name"}}
-        </div>
-        <div class="form-group">
-            {{input value=storageAccountKey type="text" class="form-control floating-label" placeholder="storage account key"}}
-        </div>
-        <div class="col-md-2 col-md-offset-10 text-right">
-            <button {{action 'load'}} {{bind-attr disabled=loadDisabled}} class="btn btn-primary btn-raised">Load</button>
-        </div>
+        <form {{action "load" on="submit"}}>
+            <div class="form-group">
+                {{input value=accountName type="text" class="form-control floating-label" placeholder="storage account name"}}
+            </div>
+            <div class="form-group">
+                {{input value=accountKey type="text" class="form-control floating-label" placeholder="storage account key"}}
+            </div>
+            <div class="col-md-2 col-md-offset-10 text-right">
+                <button type="submit" {{bind-attr disabled=loadDisabled}} class="btn btn-primary btn-raised">Load</button>
+            </div>
+        </form>
     </div>
     {{#if showProgress}}
 	<div class="progress progress-striped active">
