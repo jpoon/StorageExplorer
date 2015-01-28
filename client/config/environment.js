@@ -42,7 +42,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-    ENV.APP.apiHost = 'http://localhost:3000';
+    ENV.APP.apiHost = 'https://azuretableexplorer.azurewebsites.net/';
   }
 
   ENV.contentSecurityPolicy = {
