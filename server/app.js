@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
-//app.use(express.static(path.join(__dirname, '/../client/dist')));
+app.use(express.static(path.join(__dirname, '/../client/dist')));
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -27,7 +27,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use('/', routes);
+//app.use('/', routes);
 app.use('/tables', tables);
 
 // catch 404 and forward to error handler
