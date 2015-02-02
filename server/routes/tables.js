@@ -32,7 +32,7 @@ router.get('/:tableName', function (req, res, next) {
     }
 
     var query = new azure.TableQuery()
-                         .top(5);
+                         .top(50);
 
     req.tableService.queryEntities(req.params.tableName, query, null, function (error, result, response) {
         if (error) {
