@@ -5,8 +5,6 @@ export default Ember.Controller.extend({
       this._super(); 
     },
 
-    showProgress: false,
-
     loadDisabled: function() {
       var account = this.get('accountName'),
           key = this.get('accountKey');

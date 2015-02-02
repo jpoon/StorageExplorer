@@ -1,4 +1,9 @@
 <div class="panel panel-default">
+    {{#if showProgress}}
+    <div class="progress progress-striped active">
+        <div class="progress-bar" style="width: 100%"></div>
+    </div>
+    {{/if}}
 
     <div class="panel-heading">
         {{name}} <i>({{rowCount}})</i>
@@ -27,5 +32,4 @@
             </tbody>
         </table>
     </div>
-
 </div>

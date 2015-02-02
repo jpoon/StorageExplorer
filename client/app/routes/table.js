@@ -20,14 +20,28 @@ export default Ember.Route.extend({
         Ember.Logger.info('url', url);
         
         var data = Ember.$.getJSON(url, function() { 
-            that.controllerFor('application').set('showProgress', false);
+            that.controllerFor("table").set('showProgress', false);
         });
 
         Ember.run.later(function(){
-            that.controllerFor('application').set('showProgress', false);
+            that.controllerFor("table").set('showProgress', false);
             data.abort();
         }, 5000);
 
         return data;
+    },
+
+    actions: {
+        loading: function() {
+            this.controllerFor("table").set('showProgress', true);
+        },
+
+        error: function(error, transition) {
+            console.log(error);
+            if (error && error.status === 400) {
+                // error substate and parent routes do not handle this error
+                return this.transitionTo('modelNotFound');
+            }
+        }
     }
 });

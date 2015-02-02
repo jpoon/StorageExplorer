@@ -1,6 +1,8 @@
 import Ember from 'ember';
 
 export default Ember.ObjectController.extend({
+  showProgress: false,
+
   rowCount: function(){
     return this.get('rows.length');
   }.property('rows'),
