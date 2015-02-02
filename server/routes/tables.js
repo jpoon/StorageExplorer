@@ -1,14 +1,15 @@
-﻿var tableServiceMiddleware = require('../middleware/tableService.js'),
-    azure = require('azure'),
-    express = require('express'),
-    router = express.Router();
+﻿var debug = require('debug')('tables')
+    , tableServiceMiddleware = require('../middleware/tableService.js')
+    , azure = require('azure')
+    , express = require('express')
+    , router = express.Router();
 
 router.use(tableServiceMiddleware);
 
 router.get('/', function (req, res, next) {
     req.tableService.listTablesSegmented(null, function (error, result, response) {
         if (error) {
-            console.log(error);
+            debug(error);
             return next({ status: 500, message: error });
         }
 
@@ -30,9 +31,12 @@ router.get('/:tableName', function (req, res, next) {
         return next({ status: 400 });
     }
 
-    req.tableService.queryEntities(req.params.tableName, null, null, function (error, result, response) {
+    var query = new azure.TableQuery()
+                         .top(5);
+
+    req.tableService.queryEntities(req.params.tableName, query, null, function (error, result, response) {
         if (error) {
-            console.log(error);
+            debug(error);
             return next({ status: 500, message: error });
         }
         
