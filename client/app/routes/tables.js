@@ -9,6 +9,8 @@ export default Ember.Route.extend({
         if (!name || !key) {
             this.transitionTo('application');
         }
+
+        this.controllerFor("application").set('showProgress', true);
     },
 
     model: function() {
@@ -19,23 +21,21 @@ export default Ember.Route.extend({
         var url = config.APP.apiHost + '/tables?account=' + storageAccountName + '&key=' + storageAccountKey;
         Ember.Logger.info('url', url);
         
-        var data = Ember.$.getJSON(url, function() { 
-            that.controllerFor("tables").set('showProgress', false);
-        });
+        var data = Ember.$.getJSON(url);
 
         Ember.run.later(function(){
-            that.controllerFor("tables").set('showProgress', false);
+            that.controllerFor("application").set('showProgress', false);
             data.abort();
         }, 5000);
 
         return data;
     },
 
-    actions: {
-        loading: function() {
-            this.controllerFor("tables").set('showProgress', true);
-        },
+    afterModel: function() {
+        this.controllerFor("application").set('showProgress', false);
+    },
 
+    actions: {
         error: function(error, transition) {
             console.log(error);
             if (error && error.status === 400) {

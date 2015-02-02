@@ -1,10 +1,4 @@
 <div class="panel panel-default">
-    {{#if showProgress}}
-    <div class="progress progress-striped active">
-        <div class="progress-bar" style="width: 100%"></div>
-    </div>
-    {{/if}}
-    
     <div class="panel-heading">
         Tables <i>({{tablesCount}})</i>
     </div>
@@ -12,10 +6,16 @@
     <div class="panel-body">
         {{#each tableName in tables}}
             {{#link-to 'table' tableName}}
-                <h4>{{tableName}}</h4>
+                <p>{{tableName}}</p>
             {{/link-to}}
         {{/each}}
     </div>
+
+    {{#if showProgress}}
+    <div class="progress progress-striped active">
+        <div class="progress-bar" style="width: 100%"></div>
+    </div>
+    {{/if}}
 </div>
 
 {{outlet}}
