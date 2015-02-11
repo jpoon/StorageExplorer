@@ -36,7 +36,7 @@ export default Ember.Route.extend({
     },
 
     actions: {
-        error: function(error, transition) {
+        error: function(error) {
             console.log(error);
             if (error && error.status === 400) {
                 // error substate and parent routes do not handle this error
