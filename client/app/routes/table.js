@@ -21,14 +21,10 @@ export default Ember.Route.extend({
         var url = config.APP.apiHost + '/tables/' + params.tableName + '?account=' + storageAccountName + '&key=' + storageAccountKey;
         Ember.Logger.info('url', url);
         
-        var data = Ember.$.getJSON(url);
-
-        Ember.run.later(function(){
-            that.controllerFor("tables").set('showProgress', false);
-            data.abort();
-        }, 5000);
-
-        return data;
+        return Ember.$.getJSON(url)
+                    .fail(function(error) {
+                        throw new Error(error);
+                    });
     },
 
     afterModel: function() {
@@ -37,11 +33,8 @@ export default Ember.Route.extend({
 
     actions: {
         error: function(error) {
-            console.log(error);
-            if (error && error.status === 400) {
-                // error substate and parent routes do not handle this error
-                return this.transitionTo('modelNotFound');
-            }
+            Ember.Logger.error(error);
+            this.controllerFor("tables").set('showProgress', false);
         }
     }
 });
