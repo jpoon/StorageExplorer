@@ -14,7 +14,6 @@ export default Ember.Route.extend({
     },
 
     model: function(params) {
-        var that = this;
         var storageAccountName = this.controllerFor("application").get('storageAccountName');
         var storageAccountKey = this.controllerFor("application").get('storageAccountKey');
 
@@ -30,11 +29,4 @@ export default Ember.Route.extend({
     afterModel: function() {
         this.controllerFor("tables").set('showProgress', false);
     },
-
-    actions: {
-        error: function(error) {
-            Ember.Logger.error(error);
-            this.controllerFor("tables").set('showProgress', false);
-        }
-    }
 });

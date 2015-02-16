@@ -19,11 +19,12 @@ export default Ember.Route.extend({
 
         var url = config.APP.apiHost + '/tables?account=' + storageAccountName + '&key=' + storageAccountKey;
         Ember.Logger.info('url', url);
-        
-        return Ember.$.getJSON(url)
-                    .fail(function(error) {
-                        throw new Error(error);
-                    });
+       
+        var promise =  new Ember.RSVP.Promise(function(resolve,reject) {
+            Ember.$.getJSON(url).then(resolve, reject);
+        });
+
+        return promise;
     },
 
     afterModel: function() {
@@ -34,6 +35,7 @@ export default Ember.Route.extend({
         error: function(error) {
             Ember.Logger.error(error);
             this.controllerFor("application").set('showProgress', false);
+            return true;
         }
     }
 });
