@@ -7,30 +7,26 @@
 router.use(tableServiceMiddleware);
 
 router.get('/', function (req, res, next) {
-    try {
-        req.tableService.listTablesSegmented(null, function (error, result, response) {
-            if (error) {
-                debug(error);
-                return next({ status: 500, message: error });
-            }
+    req.tableService.listTablesSegmented(null, function (error, result, response) {
+        if (error) {
+            debug(error);
+            return next({ status: 500, message: error });
+        }
 
-            var tables = [];
-            
-            result.entries.forEach(function (tableName) {
-                tables.push(tableName);
-            });
-
-            res.status(200).json({
-                name: req.tableService.storageAccount,
-                tables: tables,
-                meta: {
-                    total: result.entries.length
-                }
-            });
+        var tables = [];
+        
+        result.entries.forEach(function (tableName) {
+            tables.push(tableName);
         });
-    } catch (err) {
-        debug(err);
-    }
+
+        res.status(200).json({
+            name: req.tableService.storageAccount,
+            tables: tables,
+            meta: {
+                total: result.entries.length
+            }
+        });
+    });
 });
 
 router.get('/:tableName', function (req, res, next) {

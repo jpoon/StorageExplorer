@@ -15,6 +15,8 @@ module.exports = function (req, res, next) {
     }
 	catch (err) {
         debug(err);
-        return next({ status: 403, statusText: err });
+        return next({ status: 403, message: err });
     }
+
+    next();
 }

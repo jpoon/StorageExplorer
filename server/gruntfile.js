@@ -1,11 +1,12 @@
 module.exports = function(grunt) {
+
     grunt.initConfig({
         nodemon: {
             dev: {
                 script: './bin/www',
                 options: {
                     env: {
-                        DEBUG: '*'
+                        DEBUG: '*,-express:*'
                     },
                 }
             }
