@@ -22,6 +22,9 @@ router.get('/', function (req, res, next) {
         res.status(200).json({
             name: req.tableService.storageAccount,
             tables: tables,
+            meta: {
+                total: result.entries.length
+            }
         });
     });
 });
