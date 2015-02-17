@@ -14,9 +14,7 @@ module.exports = function (req, res, next) {
         req.tableService = azure.createTableService(account, key);
     }
 	catch (err) {
-        debug(err.message);
-        return next({ status: 403 });
+        debug(err);
+        return next({ status: 403, statusText: err });
     }
-    
-    next();
 }
