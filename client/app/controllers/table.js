@@ -12,27 +12,30 @@ export default Ember.ObjectController.extend({
 
     this.get('rows').forEach(function(row) {
       Ember.$.map(row, function(value, key) {
-        header[key] = value;
+        header[key] = key;
       });
     });
 
     return Object.keys(header);
-
-    return Ember.$.map(this.get('rows')[0], function(value, key) {
-        return [key];
-    });
   }.property('rows'),
 
   rowData: function(){
     var rows = [];
 
+    var rowHeader = this.get('rowHeader');
+
     this.get('rows').forEach(function(row) {
-        rows.push(Ember.$.map(row, function(value, key) {
-            return [value];
+        console.log(row);
+        rows.push(Ember.$.map(rowHeader, function(header) {
+            var value = row[header];
+            if (value === undefined) {
+              value = '';
+            }
+            return value;
         }));
     });
 
     return rows;
-  }.property('rows')
+  }.property('rows', 'rowHeader')
 
 });

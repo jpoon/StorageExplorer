@@ -5,9 +5,9 @@ var ErrorController = Ember.Controller.extend({
         return this.get('content.status') > 200 ? this.get('content.status') : 500;
     }.property('content.status'),
 
-    message: function () {
-        return this.get('content.statusText') !== 'error' ? this.get('content.statusText') : 'Internal Server Error';
-    }.property('content.statusText')
+    response: function() {
+        return this.get('content.responseText');
+    }.property('content.responseText'),
 });
 
 export default ErrorController;
