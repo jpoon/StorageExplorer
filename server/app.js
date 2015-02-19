@@ -27,6 +27,8 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.disable('etag');
+
 app.use('/', routes);
 app.use('/tables', tables);
 

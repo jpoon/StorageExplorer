@@ -6,7 +6,7 @@ module.exports = function(grunt) {
                 script: './bin/www',
                 options: {
                     env: {
-                        DEBUG: '*,-express:*'
+                        DEBUG: '*,-express:*,-body-parser:*,-send:*,-morgan:*'
                     },
                 }
             }

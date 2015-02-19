@@ -13,18 +13,16 @@ router.get('/', function (req, res, next) {
             return next({ status: 500, message: error });
         }
 
-        var tables = [];
+        var tableNames = [];
         
-        result.entries.forEach(function (tableName) {
-            tables.push(tableName);
+        var id = 0;
+        result.entries.sort().forEach(function (tableName) {
+            tableNames.push({ id: id++, tableName: tableName });
         });
 
         res.status(200).json({
-            name: req.tableService.storageAccount,
-            tables: tables,
-            meta: {
-                total: result.entries.length
-            }
+           // name: req.tableService.storageAccount,
+            tables: tableNames
         });
     });
 });
@@ -45,6 +43,7 @@ router.get('/:tableName', function (req, res, next) {
         
         var rows = []
         
+        var id = 0;
         result.entries.forEach(function (row) {
             var parsedRow = {};
             for (var propertyName in row) {
@@ -54,13 +53,14 @@ router.get('/:tableName', function (req, res, next) {
                     parsedRow[propertyName] = propertyValue;
                 }
             }
-            
+
+            parsedRow['id'] = id++;
             rows.push(parsedRow);
         });
 
         res.status(200).json({
-            name: req.params.tableName,
-            rows: rows
+           // name: req.params.tableName,
+            table: rows
         });
     });
 });
