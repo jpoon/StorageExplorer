@@ -17,7 +17,7 @@ router.get('/', function (req, res, next) {
         
         var id = 0;
         result.entries.sort().forEach(function (tableName) {
-            tableNames.push({ id: id++, tableName: tableName });
+            tableNames.push({ tableName: tableName });
         });
 
         res.status(200).json({
@@ -61,7 +61,12 @@ router.get('/:tableName', function (req, res, next) {
         var response = {};
         response[req.params.tableName] = rows;
 
-        res.status(200).json(response);
+        res.status(200).json({
+           // name: req.tableService.storageAccount,
+            table: rows
+        });        
+
+        //res.status(200).json(response);
     });
 });
 

@@ -1,67 +1,1353 @@
-eval("//# sourceURL=vendor/ember-cli/loader.js");
+define('storage-explorer/adapters/application', ['exports', 'ember', 'ember-data', 'storage-explorer/config/environment'], function (exports, Ember, DS, config) {
 
-;eval("define(\"storage-explorer/adapters/application\", \n  [\"ember\",\"ember-data\",\"storage-explorer/config/environment\",\"exports\"],\n  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n\n    var DS = __dependency2__[\"default\"];\n\n    var config = __dependency3__[\"default\"];\n\n    \r\n    __exports__[\"default\"] = DS.RESTAdapter.extend({\r\n    	host: config.APP.apiHost,\r\n    \r\n    	ajax: function(url, type, hash) {\r\n    		if (Ember.isEmpty(hash)) {\r\n    			hash = {};\r\n    		}\r\n    \r\n    	    if (Ember.isEmpty(hash.data)) {\r\n    	    	hash.data = {};\r\n    	    }\r\n    	    \r\n    	    hash.data.account = localStorage.storageAccountName;\r\n    	    hash.data.key = localStorage.storageAccountKey;\r\n    \r\n            return this._super(url, type, hash);\r\n        }\r\n    \r\n    	/*\r\n    	headers: function() {\r\n    		return {\r\n    			\"storage_account_name\": localStorage.storageAccountName,\r\n    	        \"storage_account_key\": localStorage.storageAccountKey\r\n    		};\r\n    	}.property().volatile()\r\n    	*/\r\n    });\n  });//# sourceURL=storage-explorer/adapters/application.js");
+	'use strict';
 
-;eval("define(\"storage-explorer/app\", \n  [\"ember\",\"ember/resolver\",\"ember/load-initializers\",\"storage-explorer/config/environment\",\"exports\"],\n  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n    var Resolver = __dependency2__[\"default\"];\n    var loadInitializers = __dependency3__[\"default\"];\n    var config = __dependency4__[\"default\"];\n\n    Ember.MODEL_FACTORY_INJECTIONS = true;\n\n    var App = Ember.Application.extend({\n      modulePrefix: config.modulePrefix,\n      podModulePrefix: config.podModulePrefix,\n      Resolver: Resolver\n    });\n\n    loadInitializers(App, config.modulePrefix);\n\n    __exports__[\"default\"] = App;\n  });//# sourceURL=storage-explorer/app.js");
+	exports['default'] = DS['default'].RESTAdapter.extend({
+		host: config['default'].APP.apiHost,
 
-;eval("define(\"storage-explorer/controllers/application\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n\n    \r\n    __exports__[\"default\"] = Ember.Controller.extend({\r\n        init: function() {\r\n          this._super(); \r\n        },\r\n    \r\n        showProgress: false,\r\n    \r\n        loadDisabled: function() {\r\n          var account = this.get(\'accountName\'),\r\n              key = this.get(\'accountKey\');\r\n    \r\n          if (account && key) {\r\n            return false;\r\n          }\r\n    \r\n          return true;\r\n        }.property(\'accountName\', \'accountKey\'),\r\n    \r\n        storageAccountName: function() {\r\n          var name = this.get(\'accountName\');\r\n    \r\n          if (!name) {\r\n            return;\r\n          }\r\n    \r\n          localStorage.storageAccountName = name;\r\n          return encodeURIComponent(name);\r\n        }.property(\'accountName\'),\r\n    \r\n        storageAccountKey: function() {\r\n          var key = this.get(\'accountKey\');\r\n    \r\n          if (!key) {\r\n            return;\r\n          }\r\n    \r\n          localStorage.storageAccountKey = key;\r\n          return encodeURIComponent(key);\r\n        }.property(\'accountKey\'),\r\n    \r\n        actions: {\r\n            load: function() {\r\n                this.transitionToRoute(\'tables\'); \r\n            }\r\n        }\r\n    });\n  });//# sourceURL=storage-explorer/controllers/application.js");
+		ajax: function (url, type, hash) {
+			if (Ember['default'].isEmpty(hash)) {
+				hash = {};
+			}
 
-;eval("define(\"storage-explorer/controllers/error\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n\n    \r\n    var ErrorController = Ember.Controller.extend({\r\n        code: function() {\r\n            return this.get(\'content.status\') > 200 ? this.get(\'content.status\') : 500;\r\n        }.property(\'content.status\'),\r\n    \r\n        response: function() {\r\n            return this.get(\'content.responseText\');\r\n        }.property(\'content.responseText\'),\r\n    });\r\n    \r\n    __exports__[\"default\"] = ErrorController;\n  });//# sourceURL=storage-explorer/controllers/error.js");
+			if (Ember['default'].isEmpty(hash.data)) {
+				hash.data = {};
+			}
 
-;eval("define(\"storage-explorer/controllers/table\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n\n    \r\n    __exports__[\"default\"] = Ember.ArrayController.extend({\r\n    //  itemController: \'tableRow\',\r\n    \r\n      showProgress: false,\r\n    \r\n      /*\r\n      rowCount: function(){\r\n        return this.get(\'table.length\');\r\n      }.property(\'table\')\r\n      \r\n      rowHeader: function(){\r\n        var header = {};\r\n    \r\n        this.get(\'rows\').forEach(function(row) {\r\n          Ember.$.map(row, function(value, key) {\r\n            header[key] = key;\r\n          });\r\n        });\r\n    \r\n        return Object.keys(header);\r\n      }.property(\'rows\')\r\n    \r\n      /*\r\n      rowData: function(){\r\n        var rows = [];\r\n    \r\n        var rowHeader = this.get(\'rowHeader\');\r\n    \r\n        this.get(\'rows\').forEach(function(row) {\r\n            console.log(row);\r\n            rows.push(Ember.$.map(rowHeader, function(header) {\r\n                var value = row[header];\r\n                if (value === undefined) {\r\n                  value = \'\';\r\n                }\r\n                return value;\r\n            }));\r\n        });\r\n    \r\n        return rows;\r\n      }.property(\'rows\', \'rowHeader\')\r\n    */\r\n    });\n  });//# sourceURL=storage-explorer/controllers/table.js");
+			hash.data.account = localStorage.storageAccountName;
+			hash.data.key = localStorage.storageAccountKey;
 
-;eval("define(\"storage-explorer/initializers/export-application-global\", \n  [\"ember\",\"storage-explorer/config/environment\",\"exports\"],\n  function(__dependency1__, __dependency2__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n    var config = __dependency2__[\"default\"];\n\n    function initialize(container, application) {\n      var classifiedName = Ember.String.classify(config.modulePrefix);\n\n      if (config.exportApplicationGlobal) {\n        window[classifiedName] = application;\n      }\n    };\n    __exports__.initialize = initialize;\n    __exports__[\"default\"] = {\n      name: \'export-application-global\',\n\n      initialize: initialize\n    };\n  });//# sourceURL=storage-explorer/initializers/export-application-global.js");
+			return this._super(url, type, hash);
+		}
 
-;eval("define(\"storage-explorer/models/table\", \n  [\"ember-data\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var DS = __dependency1__[\"default\"];\n\n    \r\n    var table = DS.Model.extend({\r\n        tableName: DS.attr(\'string\')\r\n    });\r\n    \r\n    __exports__[\"default\"] = table;\n  });//# sourceURL=storage-explorer/models/table.js");
+		/*
+	 headers: function() {
+	 	return {
+	 		"storage_account_name": localStorage.storageAccountName,
+	         "storage_account_key": localStorage.storageAccountKey
+	 	};
+	 }.property().volatile()
+	 */
+	});
 
-;eval("define(\"storage-explorer/router\", \n  [\"ember\",\"storage-explorer/config/environment\",\"exports\"],\n  function(__dependency1__, __dependency2__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n\n    var config = __dependency2__[\"default\"];\n\n    \r\n    var Router = Ember.Router.extend({\r\n      location: config.locationType\r\n    });\r\n    \r\n    Router.map(function() {\r\n        this.resource(\"tables\", { path: \'/table\' }, function() {\r\n            this.resource(\"table\", { path: \"/:tableName\" });\r\n        });\r\n    });\r\n    \r\n    __exports__[\"default\"] = Router;\n  });//# sourceURL=storage-explorer/router.js");
+});
+define('storage-explorer/app', ['exports', 'ember', 'ember/resolver', 'ember/load-initializers', 'storage-explorer/config/environment'], function (exports, Ember, Resolver, loadInitializers, config) {
 
-;eval("define(\"storage-explorer/routes/table\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n\n    \r\n    __exports__[\"default\"] = Ember.Route.extend({\r\n        beforeModel: function() {\r\n            var name = this.controllerFor(\'application\').get(\'storageAccountName\');\r\n            var key = this.controllerFor(\'application\').get(\'storageAccountKey\');\r\n    \r\n            if (!name || !key) {\r\n                this.transitionTo(\'application\');\r\n            }\r\n    \r\n            this.controllerFor(\'tables\').set(\'showProgress\', true);\r\n        },\r\n    \r\n        model: function(params) {\r\n            return this.store.find(\'table\', params.tableName);\r\n        },\r\n    \r\n        afterModel: function() {\r\n            this.controllerFor(\"tables\").set(\'showProgress\', false);\r\n        },\r\n    });\n  });//# sourceURL=storage-explorer/routes/table.js");
+  'use strict';
 
-;eval("define(\"storage-explorer/routes/tables\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n\n    \r\n    __exports__[\"default\"] = Ember.Route.extend({\r\n        beforeModel: function() {\r\n            var name = this.controllerFor(\'application\').get(\'storageAccountName\');\r\n            var key = this.controllerFor(\'application\').get(\'storageAccountKey\');\r\n    \r\n            if (!name || !key) {\r\n                this.transitionTo(\'application\');\r\n            }\r\n    \r\n            this.controllerFor(\"application\").set(\'showProgress\', true);\r\n        },\r\n    \r\n        model: function() {\r\n            return this.store.find(\'table\');\r\n        },\r\n    \r\n        afterModel: function() {\r\n            this.controllerFor(\"application\").set(\'showProgress\', false);\r\n        },\r\n    \r\n        actions: {\r\n            error: function() {\r\n                this.controllerFor(\"application\").set(\'showProgress\', false);\r\n                return true;\r\n            }\r\n        }\r\n    });\n  });//# sourceURL=storage-explorer/routes/tables.js");
+  Ember['default'].MODEL_FACTORY_INJECTIONS = true;
 
-;eval("define(\"storage-explorer/serializers/table\", \n  [\"ember-data\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var DS = __dependency1__[\"default\"];\n\n    \r\n    __exports__[\"default\"] = DS.RESTSerializer.extend({\r\n        extractSingle: function(store, type, payload, id, requestType) {\r\n            console.log(\"!!!!\");\r\n            console.log(payload);\r\n    \r\n            return this._super(store, type, payload, id, requestType);\r\n        }\r\n    });\n  });//# sourceURL=storage-explorer/serializers/table.js");
+  var App = Ember['default'].Application.extend({
+    modulePrefix: config['default'].modulePrefix,
+    podModulePrefix: config['default'].podModulePrefix,
+    Resolver: Resolver['default']
+  });
 
-;eval("define(\"storage-explorer/templates/application\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n    __exports__[\"default\"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {\n    this.compilerInfo = [4,\'>= 1.0.0\'];\n    helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};\n      var buffer = \'\', stack1, helper, options, escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing, self=this;\n\n    function program1(depth0,data) {\n      \n      \n      data.buffer.push(\"\\r\\n    <div class=\\\"progress progress-striped active\\\">\\r\\n        <div class=\\\"progress-bar\\\" style=\\\"width: 100%\\\"></div>\\r\\n    </div>\\r\\n    \");\n      }\n\n      data.buffer.push(\"<header>\\r\\n    <div class=\\\"navbar navbar-default\\\">\\r\\n        <div class=\\\"navbar-header\\\">\\r\\n            <button type=\\\"button\\\" class=\\\"navbar-toggle\\\" data-toggle=\\\"collapse\\\" data-target=\\\".navbar-responsive-collapse\\\">\\r\\n                <span class=\\\"icon-bar\\\"></span>\\r\\n                <span class=\\\"icon-bar\\\"></span>\\r\\n                <span class=\\\"icon-bar\\\"></span>\\r\\n            </button>\\r\\n            <a class=\\\"navbar-brand\\\">Azure Table Storage Explorer</a>\\r\\n        </div>\\r\\n        <div class=\\\"navbar-collapse collapse navbar-responsive-collapse\\\">\\r\\n            <ul class=\\\"nav navbar-nav navbar-right\\\">\\r\\n                <li><a href=\\\"https://github.com/jpoon/StorageExplorer\\\">GitHub</a></li>\\r\\n                <li><a href=\\\"javascript:void(0)\\\" data-toggle=\\\"modal\\\" data-target=\\\"#complete-dialog\\\">Security</a></li>\\r\\n            </ul>\\r\\n        </div>\\r\\n    </div>\\r\\n</header>\\r\\n\\r\\n<!-- Modal -->\\r\\n<div id=\\\"complete-dialog\\\" class=\\\"modal fade\\\" tabindex=\\\"-1\\\">\\r\\n  <div class=\\\"modal-dialog\\\">\\r\\n    <div class=\\\"modal-content\\\">\\r\\n        <div class=\\\"modal-header\\\">\\r\\n            <button type=\\\"button\\\" class=\\\"close\\\" data-dismiss=\\\"modal\\\" aria-hidden=\\\"true\\\">×</button>\\r\\n            <h4 class=\\\"modal-title\\\">Security Disclaimer</h4>\\r\\n        </div>\\r\\n        <div class=\\\"modal-body\\\">\\r\\n        <p>\\r\\n            Storage account credentials are never stored on the server and are transmitted securely (via HTTPS).\\r\\n        </p>\\r\\n        </div>\\r\\n        <div class=\\\"modal-footer\\\">\\r\\n            <button class=\\\"btn btn-primary\\\" data-dismiss=\\\"modal\\\">Dismiss</button>\\r\\n        </div>\\r\\n    </div>\\r\\n  </div>\\r\\n</div>\\r\\n\\r\\n<div class=\\\"panel panel-default\\\">\\r\\n    <div class=\\\"panel-heading\\\">\\r\\n        <span>Storage Account Information</span>\\r\\n    </div>\\r\\n    <div class=\\\"panel-body row\\\">\\r\\n        <form \");\n      data.buffer.push(escapeExpression(helpers.action.call(depth0, \"load\", {hash:{\n        \'on\': (\"submit\")\n      },hashTypes:{\'on\': \"STRING\"},hashContexts:{\'on\': depth0},contexts:[depth0],types:[\"STRING\"],data:data})));\n      data.buffer.push(\">\\r\\n            <div class=\\\"form-group col-md-2\\\">\\r\\n                \");\n      data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{\n        \'value\': (\"accountName\"),\n        \'type\': (\"text\"),\n        \'class\': (\"form-control floating-label\"),\n        \'placeholder\': (\"storage account name\")\n      },hashTypes:{\'value\': \"ID\",\'type\': \"STRING\",\'class\': \"STRING\",\'placeholder\': \"STRING\"},hashContexts:{\'value\': depth0,\'type\': depth0,\'class\': depth0,\'placeholder\': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, \"input\", options))));\n      data.buffer.push(\"\\r\\n            </div>\\r\\n            <div class=\\\"form-group col-md-10\\\">\\r\\n                \");\n      data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{\n        \'value\': (\"accountKey\"),\n        \'type\': (\"text\"),\n        \'class\': (\"form-control floating-label\"),\n        \'placeholder\': (\"storage account key\")\n      },hashTypes:{\'value\': \"ID\",\'type\': \"STRING\",\'class\': \"STRING\",\'placeholder\': \"STRING\"},hashContexts:{\'value\': depth0,\'type\': depth0,\'class\': depth0,\'placeholder\': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, \"input\", options))));\n      data.buffer.push(\"\\r\\n            </div>\\r\\n            <div class=\\\"col-md-2 col-md-offset-10 text-right\\\">\\r\\n                <button type=\\\"submit\\\" \");\n      data.buffer.push(escapeExpression(helpers[\'bind-attr\'].call(depth0, {hash:{\n        \'disabled\': (\"loadDisabled\")\n      },hashTypes:{\'disabled\': \"ID\"},hashContexts:{\'disabled\': depth0},contexts:[],types:[],data:data})));\n      data.buffer.push(\" class=\\\"btn btn-primary btn-raised\\\">Load</button>\\r\\n            </div>\\r\\n        </form>\\r\\n    </div>\\r\\n\\r\\n    \");\n      stack1 = helpers[\'if\'].call(depth0, \"showProgress\", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"\\r\\n</div>\\r\\n\\r\\n\");\n      stack1 = helpers._triageMustache.call(depth0, \"outlet\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"\\r\\n\\r\\n\");\n      return buffer;\n      \n    });\n  });//# sourceURL=storage-explorer/templates/application.js");
+  loadInitializers['default'](App, config['default'].modulePrefix);
 
-;eval("define(\"storage-explorer/templates/error\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n    __exports__[\"default\"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {\n    this.compilerInfo = [4,\'>= 1.0.0\'];\n    helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};\n      var buffer = \'\', stack1;\n\n\n      data.buffer.push(\"<div class=\\\"alert alert-dismissable alert-warning\\\">\\r\\n    <button type=\\\"button\\\" class=\\\"close\\\" data-dismiss=\\\"alert\\\">×</button>\\r\\n    <strong>Oh snap!</strong> \");\n      stack1 = helpers._triageMustache.call(depth0, \"response\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\" (\");\n      stack1 = helpers._triageMustache.call(depth0, \"code\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\")\\r\\n</div>\\r\\n\");\n      return buffer;\n      \n    });\n  });//# sourceURL=storage-explorer/templates/error.js");
+  exports['default'] = App;
 
-;eval("define(\"storage-explorer/templates/table\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n    __exports__[\"default\"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {\n    this.compilerInfo = [4,\'>= 1.0.0\'];\n    helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};\n      var buffer = \'\', stack1, self=this;\n\n    function program1(depth0,data) {\n      \n      var buffer = \'\', stack1;\n      data.buffer.push(\"\\r\\n                      <th>\");\n      stack1 = helpers._triageMustache.call(depth0, \"item\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"</th>\\r\\n                    \");\n      return buffer;\n      }\n\n    function program3(depth0,data) {\n      \n      var buffer = \'\', stack1;\n      data.buffer.push(\"\\r\\n                    <tr>\\r\\n                    <td>\");\n      stack1 = helpers._triageMustache.call(depth0, \"_view.contentIndex\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"</td>\\r\\n                    \");\n      stack1 = helpers.each.call(depth0, \"column\", \"in\", \"row\", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0,depth0,depth0],types:[\"ID\",\"ID\",\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"\\r\\n                    </tr>\\r\\n                \");\n      return buffer;\n      }\n    function program4(depth0,data) {\n      \n      var buffer = \'\', stack1;\n      data.buffer.push(\"\\r\\n                      <td>\");\n      stack1 = helpers._triageMustache.call(depth0, \"column\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"</td>\\r\\n                    \");\n      return buffer;\n      }\n\n      data.buffer.push(\"<div class=\\\"panel panel-default\\\">\\r\\n    <div class=\\\"panel-heading\\\">\\r\\n        \");\n      stack1 = helpers._triageMustache.call(depth0, \"name\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\" <i>(\");\n      stack1 = helpers._triageMustache.call(depth0, \"rowCount\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\")</i>\\r\\n    </div>\\r\\n\\r\\n    <div class=\\\"panel-body row\\\">\\r\\n        <table class=\\\"table table-striped table-hover\\\">\\r\\n            <thead>\\r\\n                <tr>\\r\\n                    <th>#</th>\\r\\n                    \");\n      stack1 = helpers.each.call(depth0, \"item\", \"in\", \"rowHeader\", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0,depth0],types:[\"ID\",\"ID\",\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"\\r\\n                <tr>\\r\\n            </thead>\\r\\n\\r\\n            <tbody>\\r\\n                \");\n      stack1 = helpers.each.call(depth0, \"row\", \"in\", \"rowData\", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0,depth0,depth0],types:[\"ID\",\"ID\",\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"\\r\\n            </tbody>\\r\\n        </table>\\r\\n    </div>\\r\\n</div>\");\n      return buffer;\n      \n    });\n  });//# sourceURL=storage-explorer/templates/table.js");
+});
+define('storage-explorer/controllers/application', ['exports', 'ember'], function (exports, Ember) {
 
-;eval("define(\"storage-explorer/templates/tables\", \n  [\"ember\",\"exports\"],\n  function(__dependency1__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n    __exports__[\"default\"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {\n    this.compilerInfo = [4,\'>= 1.0.0\'];\n    helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};\n      var buffer = \'\', stack1, self=this, helperMissing=helpers.helperMissing;\n\n    function program1(depth0,data) {\n      \n      var buffer = \'\', stack1, helper, options;\n      data.buffer.push(\"\\r\\n            \");\n      stack1 = (helper = helpers[\'link-to\'] || (depth0 && depth0[\'link-to\']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:[\"STRING\",\"ID\"],data:data},helper ? helper.call(depth0, \"table\", \"tableName\", options) : helperMissing.call(depth0, \"link-to\", \"table\", \"tableName\", options));\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"\\r\\n        \");\n      return buffer;\n      }\n    function program2(depth0,data) {\n      \n      var buffer = \'\', stack1;\n      data.buffer.push(\"\\r\\n                <p>\");\n      stack1 = helpers._triageMustache.call(depth0, \"tableName\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"</p>\\r\\n            \");\n      return buffer;\n      }\n\n    function program4(depth0,data) {\n      \n      \n      data.buffer.push(\"\\r\\n    <div class=\\\"progress progress-striped active\\\">\\r\\n        <div class=\\\"progress-bar\\\" style=\\\"width: 100%\\\"></div>\\r\\n    </div>\\r\\n    \");\n      }\n\n      data.buffer.push(\"<div class=\\\"panel panel-default\\\">\\r\\n    <div class=\\\"panel-heading\\\">\\r\\n        Tables <i>(\");\n      stack1 = helpers._triageMustache.call(depth0, \"controller.length\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\")</i>\\r\\n    </div>\\r\\n\\r\\n    <div class=\\\"panel-body\\\">\\r\\n        \");\n      stack1 = helpers.each.call(depth0, \"controller\", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"\\r\\n    </div>\\r\\n\\r\\n    \");\n      stack1 = helpers[\'if\'].call(depth0, \"showProgress\", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"\\r\\n</div>\\r\\n\\r\\n\");\n      stack1 = helpers._triageMustache.call(depth0, \"outlet\", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:[\"ID\"],data:data});\n      if(stack1 || stack1 === 0) { data.buffer.push(stack1); }\n      data.buffer.push(\"\\r\\n\");\n      return buffer;\n      \n    });\n  });//# sourceURL=storage-explorer/templates/tables.js");
+    'use strict';
 
-;eval("define(\"storage-explorer/tests/adapters/application.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - adapters\');\n    test(\'adapters/application.js should pass jshint\', function() { \n      ok(true, \'adapters/application.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/adapters/application.jshint.js");
+    exports['default'] = Ember['default'].Controller.extend({
+        init: function () {
+            this._super();
+        },
 
-;eval("define(\"storage-explorer/tests/app.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - .\');\n    test(\'app.js should pass jshint\', function() { \n      ok(true, \'app.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/app.jshint.js");
+        showProgress: false,
 
-;eval("define(\"storage-explorer/tests/controllers/application.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - controllers\');\n    test(\'controllers/application.js should pass jshint\', function() { \n      ok(true, \'controllers/application.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/controllers/application.jshint.js");
+        loadDisabled: (function () {
+            var account = this.get("accountName"),
+                key = this.get("accountKey");
 
-;eval("define(\"storage-explorer/tests/controllers/error.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - controllers\');\n    test(\'controllers/error.js should pass jshint\', function() { \n      ok(true, \'controllers/error.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/controllers/error.jshint.js");
+            if (account && key) {
+                return false;
+            }
 
-;eval("define(\"storage-explorer/tests/controllers/table.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - controllers\');\n    test(\'controllers/table.js should pass jshint\', function() { \n      ok(true, \'controllers/table.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/controllers/table.jshint.js");
+            return true;
+        }).property("accountName", "accountKey"),
 
-;eval("define(\"storage-explorer/tests/helpers/resolver\", \n  [\"ember/resolver\",\"storage-explorer/config/environment\",\"exports\"],\n  function(__dependency1__, __dependency2__, __exports__) {\n    \"use strict\";\n    var Resolver = __dependency1__[\"default\"];\n    var config = __dependency2__[\"default\"];\n\n    var resolver = Resolver.create();\n\n    resolver.namespace = {\n      modulePrefix: config.modulePrefix,\n      podModulePrefix: config.podModulePrefix\n    };\n\n    __exports__[\"default\"] = resolver;\n  });//# sourceURL=storage-explorer/tests/helpers/resolver.js");
+        storageAccountName: (function () {
+            var name = this.get("accountName");
 
-;eval("define(\"storage-explorer/tests/helpers/start-app\", \n  [\"ember\",\"storage-explorer/app\",\"storage-explorer/router\",\"storage-explorer/config/environment\",\"exports\"],\n  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {\n    \"use strict\";\n    var Ember = __dependency1__[\"default\"];\n    var Application = __dependency2__[\"default\"];\n    var Router = __dependency3__[\"default\"];\n    var config = __dependency4__[\"default\"];\n\n    __exports__[\"default\"] = function startApp(attrs) {\n      var App;\n\n      var attributes = Ember.merge({}, config.APP);\n      attributes = Ember.merge(attributes, attrs); // use defaults, but you can override;\n\n      Ember.run(function() {\n        App = Application.create(attributes);\n        App.setupForTesting();\n        App.injectTestHelpers();\n      });\n\n      return App;\n    }\n  });//# sourceURL=storage-explorer/tests/helpers/start-app.js");
+            if (!name) {
+                return;
+            }
 
-;eval("define(\"storage-explorer/tests/models/table.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - models\');\n    test(\'models/table.js should pass jshint\', function() { \n      ok(true, \'models/table.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/models/table.jshint.js");
+            name = "sueandjason";
 
-;eval("define(\"storage-explorer/tests/router.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - .\');\n    test(\'router.js should pass jshint\', function() { \n      ok(true, \'router.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/router.jshint.js");
+            localStorage.storageAccountName = name;
+            return encodeURIComponent(name);
+        }).property("accountName"),
 
-;eval("define(\"storage-explorer/tests/routes/table.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - routes\');\n    test(\'routes/table.js should pass jshint\', function() { \n      ok(true, \'routes/table.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/routes/table.jshint.js");
+        storageAccountKey: (function () {
+            var key = this.get("accountKey");
 
-;eval("define(\"storage-explorer/tests/routes/tables.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - routes\');\n    test(\'routes/tables.js should pass jshint\', function() { \n      ok(true, \'routes/tables.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/routes/tables.jshint.js");
+            if (!key) {
+                return;
+            }
 
-;eval("define(\"storage-explorer/tests/serializers/table.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - serializers\');\n    test(\'serializers/table.js should pass jshint\', function() { \n      ok(true, \'serializers/table.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/serializers/table.jshint.js");
+            key = "VdSeV70ua7RcuTMW7vPDhAU+Kyzo/hBOb6oOt8zQ5oU4wFrrwOGVEa8bYxfcEcm2G6HeKDh48OSpOUqDQ7tHOA==";
 
-;eval("define(\"storage-explorer/tests/storage-explorer/tests/helpers/resolver.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - storage-explorer/tests/helpers\');\n    test(\'storage-explorer/tests/helpers/resolver.js should pass jshint\', function() { \n      ok(true, \'storage-explorer/tests/helpers/resolver.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/storage-explorer/tests/helpers/resolver.jshint.js");
+            localStorage.storageAccountKey = key;
+            return encodeURIComponent(key);
+        }).property("accountKey"),
 
-;eval("define(\"storage-explorer/tests/storage-explorer/tests/helpers/start-app.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - storage-explorer/tests/helpers\');\n    test(\'storage-explorer/tests/helpers/start-app.js should pass jshint\', function() { \n      ok(true, \'storage-explorer/tests/helpers/start-app.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/storage-explorer/tests/helpers/start-app.jshint.js");
+        actions: {
+            load: function () {
+                this.transitionToRoute("tables");
+            }
+        }
+    });
 
-;eval("define(\"storage-explorer/tests/storage-explorer/tests/test-helper.jshint\", \n  [],\n  function() {\n    \"use strict\";\n    module(\'JSHint - storage-explorer/tests\');\n    test(\'storage-explorer/tests/test-helper.js should pass jshint\', function() { \n      ok(true, \'storage-explorer/tests/test-helper.js should pass jshint.\'); \n    });\n  });//# sourceURL=storage-explorer/tests/storage-explorer/tests/test-helper.jshint.js");
+});
+define('storage-explorer/controllers/error', ['exports', 'ember'], function (exports, Ember) {
 
-;eval("define(\"storage-explorer/tests/test-helper\", \n  [\"storage-explorer/tests/helpers/resolver\",\"ember-qunit\"],\n  function(__dependency1__, __dependency2__) {\n    \"use strict\";\n    var resolver = __dependency1__[\"default\"];\n    var setResolver = __dependency2__.setResolver;\n\n    setResolver(resolver);\n\n    document.write(\'<div id=\"ember-testing-container\"><div id=\"ember-testing\"></div></div>\');\n\n    QUnit.config.urlConfig.push({ id: \'nocontainer\', label: \'Hide container\'});\n    var containerVisibility = QUnit.urlParams.nocontainer ? \'hidden\' : \'visible\';\n    document.getElementById(\'ember-testing-container\').style.visibility = containerVisibility;\n  });//# sourceURL=storage-explorer/tests/test-helper.js");
+    'use strict';
 
+    var ErrorController = Ember['default'].Controller.extend({
+        code: (function () {
+            return this.get("content.status") > 200 ? this.get("content.status") : 500;
+        }).property("content.status"),
+
+        response: (function () {
+            return this.get("content.responseText") || this.get("content.statusText");
+        }).property("content.responseText", "content.statusText") });
+
+    exports['default'] = ErrorController;
+
+});
+define('storage-explorer/controllers/table', ['exports', 'ember'], function (exports, Ember) {
+
+  'use strict';
+
+  exports['default'] = Ember['default'].ArrayController.extend({
+    //  itemController: 'tableRow',
+
+    showProgress: false });
+
+
+  /*
+  rowCount: function(){
+    return this.get('table.length');
+  }.property('table')
+
+  rowHeader: function(){
+    var header = {};
+     this.get('rows').forEach(function(row) {
+      Ember.$.map(row, function(value, key) {
+        header[key] = key;
+      });
+    });
+     return Object.keys(header);
+  }.property('rows')
+   /*
+  rowData: function(){
+    var rows = [];
+     var rowHeader = this.get('rowHeader');
+     this.get('rows').forEach(function(row) {
+        console.log(row);
+        rows.push(Ember.$.map(rowHeader, function(header) {
+            var value = row[header];
+            if (value === undefined) {
+              value = '';
+            }
+            return value;
+        }));
+    });
+     return rows;
+  }.property('rows', 'rowHeader')
+  */
+
+});
+define('storage-explorer/initializers/app-version', ['exports', 'storage-explorer/config/environment', 'ember'], function (exports, config, Ember) {
+
+  'use strict';
+
+  var classify = Ember['default'].String.classify;
+
+  exports['default'] = {
+    name: "App Version",
+    initialize: function (container, application) {
+      var appName = classify(application.toString());
+      Ember['default'].libraries.register(appName, config['default'].APP.version);
+    }
+  };
+
+});
+define('storage-explorer/initializers/export-application-global', ['exports', 'ember', 'storage-explorer/config/environment'], function (exports, Ember, config) {
+
+  'use strict';
+
+  exports.initialize = initialize;
+
+  function initialize(container, application) {
+    var classifiedName = Ember['default'].String.classify(config['default'].modulePrefix);
+
+    if (config['default'].exportApplicationGlobal && !window[classifiedName]) {
+      window[classifiedName] = application;
+    }
+  };
+
+  exports['default'] = {
+    name: "export-application-global",
+
+    initialize: initialize
+  };
+
+});
+define('storage-explorer/models/table', ['exports', 'ember-data'], function (exports, DS) {
+
+    'use strict';
+
+    var table = DS['default'].Model.extend({
+        tableName: DS['default'].attr("string")
+    });
+
+    exports['default'] = table;
+
+});
+define('storage-explorer/router', ['exports', 'ember', 'storage-explorer/config/environment'], function (exports, Ember, config) {
+
+    'use strict';
+
+    var Router = Ember['default'].Router.extend({
+        location: config['default'].locationType
+    });
+
+    Router.map(function () {
+        this.resource("tables", { path: "/table" }, function () {
+            this.resource("table", { path: "/:tableName" });
+        });
+    });
+
+    exports['default'] = Router;
+
+});
+define('storage-explorer/routes/table', ['exports', 'ember'], function (exports, Ember) {
+
+    'use strict';
+
+    exports['default'] = Ember['default'].Route.extend({
+        beforeModel: function () {
+            var name = this.controllerFor("application").get("storageAccountName");
+            var key = this.controllerFor("application").get("storageAccountKey");
+
+            if (!name || !key) {
+                this.transitionTo("application");
+            }
+
+            this.controllerFor("tables").set("showProgress", true);
+        },
+
+        model: function (params) {
+            return this.store.find("table", params.tableName);
+        },
+
+        afterModel: function () {
+            this.controllerFor("tables").set("showProgress", false);
+        } });
+
+});
+define('storage-explorer/routes/tables', ['exports', 'ember'], function (exports, Ember) {
+
+    'use strict';
+
+    exports['default'] = Ember['default'].Route.extend({
+        beforeModel: function () {
+            var name = this.controllerFor("application").get("storageAccountName");
+            var key = this.controllerFor("application").get("storageAccountKey");
+
+            if (!name || !key) {
+                this.transitionTo("application");
+            }
+
+            this.controllerFor("application").set("showProgress", true);
+        },
+
+        model: function () {
+            return this.store.find("table");
+        },
+
+        afterModel: function () {
+            this.controllerFor("application").set("showProgress", false);
+        },
+
+        actions: {
+            error: function () {
+                this.controllerFor("application").set("showProgress", false);
+                return true;
+            }
+        }
+    });
+
+});
+define('storage-explorer/serializers/table', ['exports', 'ember-data'], function (exports, DS) {
+
+    'use strict';
+
+    exports['default'] = DS['default'].RESTSerializer.extend({
+        primaryKey: "tableName",
+
+        extractSingle: function (store, type, payload, id, requestType) {
+            console.log("!!!!");
+            console.log(payload);
+
+            return this._super(store, type, payload, id, requestType);
+        }
+    });
+
+});
+define('storage-explorer/templates/application', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1,"class","progress progress-striped active");
+          var el2 = dom.createTextNode("\n        ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("div");
+          dom.setAttribute(el2,"class","progress-bar");
+          dom.setAttribute(el2,"style","width: 100%");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("header");
+        var el2 = dom.createTextNode("\n    ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","navbar navbar-default");
+        var el3 = dom.createTextNode("\n        ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","navbar-header");
+        var el4 = dom.createTextNode("\n            ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("button");
+        dom.setAttribute(el4,"type","button");
+        dom.setAttribute(el4,"class","navbar-toggle");
+        dom.setAttribute(el4,"data-toggle","collapse");
+        dom.setAttribute(el4,"data-target",".navbar-responsive-collapse");
+        var el5 = dom.createTextNode("\n                ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("span");
+        dom.setAttribute(el5,"class","icon-bar");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n                ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("span");
+        dom.setAttribute(el5,"class","icon-bar");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n                ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("span");
+        dom.setAttribute(el5,"class","icon-bar");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n            ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n            ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("a");
+        dom.setAttribute(el4,"class","navbar-brand");
+        var el5 = dom.createTextNode("Azure Table Storage Explorer");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n        ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n        ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","navbar-collapse collapse navbar-responsive-collapse");
+        var el4 = dom.createTextNode("\n            ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("ul");
+        dom.setAttribute(el4,"class","nav navbar-nav navbar-right");
+        var el5 = dom.createTextNode("\n                ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("li");
+        var el6 = dom.createElement("a");
+        dom.setAttribute(el6,"href","https://github.com/jpoon/StorageExplorer");
+        var el7 = dom.createTextNode("GitHub");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n                ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("li");
+        var el6 = dom.createElement("a");
+        dom.setAttribute(el6,"href","javascript:void(0)");
+        dom.setAttribute(el6,"data-toggle","modal");
+        dom.setAttribute(el6,"data-target","#complete-dialog");
+        var el7 = dom.createTextNode("Security");
+        dom.appendChild(el6, el7);
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n            ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n        ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment(" Modal ");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"id","complete-dialog");
+        dom.setAttribute(el1,"class","modal fade");
+        dom.setAttribute(el1,"tabindex","-1");
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","modal-dialog");
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3,"class","modal-content");
+        var el4 = dom.createTextNode("\n        ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","modal-header");
+        var el5 = dom.createTextNode("\n            ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("button");
+        dom.setAttribute(el5,"type","button");
+        dom.setAttribute(el5,"class","close");
+        dom.setAttribute(el5,"data-dismiss","modal");
+        dom.setAttribute(el5,"aria-hidden","true");
+        var el6 = dom.createTextNode("×");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n            ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("h4");
+        dom.setAttribute(el5,"class","modal-title");
+        var el6 = dom.createTextNode("Security Disclaimer");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n        ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n        ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","modal-body");
+        var el5 = dom.createTextNode("\n        ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("p");
+        var el6 = dom.createTextNode("\n            Storage account credentials are never stored on the server and are transmitted securely (via HTTPS).\n        ");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n        ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n        ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","modal-footer");
+        var el5 = dom.createTextNode("\n            ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("button");
+        dom.setAttribute(el5,"class","btn btn-primary");
+        dom.setAttribute(el5,"data-dismiss","modal");
+        var el6 = dom.createTextNode("Dismiss");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n        ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n    ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n  ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","panel panel-default");
+        var el2 = dom.createTextNode("\n    ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","panel-heading");
+        var el3 = dom.createTextNode("\n        ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("span");
+        var el4 = dom.createTextNode("Storage Account Information");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n    ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","panel-body row");
+        var el3 = dom.createTextNode("\n        ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("form");
+        var el4 = dom.createTextNode("\n            ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","form-group col-md-2");
+        var el5 = dom.createTextNode("\n                ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n            ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n            ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","form-group col-md-10");
+        var el5 = dom.createTextNode("\n                ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n            ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n            ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("div");
+        dom.setAttribute(el4,"class","col-md-2 col-md-offset-10 text-right");
+        var el5 = dom.createTextNode("\n                ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("button");
+        dom.setAttribute(el5,"type","submit");
+        dom.setAttribute(el5,"class","btn btn-primary btn-raised");
+        var el6 = dom.createTextNode("Load");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n            ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n        ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, element = hooks.element, get = hooks.get, inline = hooks.inline, block = hooks.block, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var element0 = dom.childAt(fragment, [6]);
+        var element1 = dom.childAt(element0, [3, 1]);
+        var element2 = dom.childAt(element1, [5, 1]);
+        var morph0 = dom.createMorphAt(dom.childAt(element1, [1]),0,1);
+        var morph1 = dom.createMorphAt(dom.childAt(element1, [3]),0,1);
+        var morph2 = dom.createMorphAt(element0,4,-1);
+        var morph3 = dom.createMorphAt(fragment,7,8,contextualElement);
+        element(env, element1, context, "action", ["load"], {"on": "submit"});
+        inline(env, morph0, context, "input", [], {"value": get(env, context, "accountName"), "type": "text", "class": "form-control floating-label", "placeholder": "storage account name"});
+        inline(env, morph1, context, "input", [], {"value": get(env, context, "accountKey"), "type": "text", "class": "form-control floating-label", "placeholder": "storage account key"});
+        element(env, element2, context, "bind-attr", [], {"disabled": get(env, context, "loadDisabled")});
+        block(env, morph2, context, "if", [get(env, context, "showProgress")], {}, child0, null);
+        content(env, morph3, context, "outlet");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('storage-explorer/templates/error', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","alert alert-dismissable alert-warning");
+        var el2 = dom.createTextNode("\n    ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("button");
+        dom.setAttribute(el2,"type","button");
+        dom.setAttribute(el2,"class","close");
+        dom.setAttribute(el2,"data-dismiss","alert");
+        var el3 = dom.createTextNode("×");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n    ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("strong");
+        var el3 = dom.createTextNode("Oh snap!");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" (");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(")\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var element0 = dom.childAt(fragment, [0]);
+        var morph0 = dom.createMorphAt(element0,4,5);
+        var morph1 = dom.createMorphAt(element0,5,6);
+        content(env, morph0, context, "response");
+        content(env, morph1, context, "code");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('storage-explorer/templates/table', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("                      ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("th");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, content = hooks.content;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
+          content(env, morph0, context, "item");
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("                      ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("td");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, content = hooks.content;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
+            content(env, morph0, context, "column");
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("                    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("tr");
+          var el2 = dom.createTextNode("\n                    ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("td");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("                    ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var element0 = dom.childAt(fragment, [1]);
+          var morph0 = dom.createMorphAt(dom.childAt(element0, [1]),-1,-1);
+          var morph1 = dom.createMorphAt(element0,2,3);
+          content(env, morph0, context, "_view.contentIndex");
+          block(env, morph1, context, "each", [get(env, context, "row")], {"keyword": "column"}, child0, null);
+          return fragment;
+        }
+      };
+    }());
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createElement("div");
+        dom.setAttribute(el0,"class","panel panel-default");
+        var el1 = dom.createTextNode("\n    ");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","panel-heading");
+        var el2 = dom.createTextNode("\n        ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("i");
+        var el3 = dom.createTextNode("(");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode(")");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n    ");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n    ");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","panel-body row");
+        var el2 = dom.createTextNode("\n        ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("table");
+        dom.setAttribute(el2,"class","table table-striped table-hover");
+        var el3 = dom.createTextNode("\n            ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("thead");
+        var el4 = dom.createTextNode("\n                ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createElement("tr");
+        var el5 = dom.createTextNode("\n                    ");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createElement("th");
+        var el6 = dom.createTextNode("#");
+        dom.appendChild(el5, el6);
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("\n");
+        dom.appendChild(el4, el5);
+        var el5 = dom.createTextNode("                ");
+        dom.appendChild(el4, el5);
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n            ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n\n            ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("tbody");
+        var el4 = dom.createTextNode("\n");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("            ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n        ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n    ");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var element1 = dom.childAt(fragment, [1]);
+        var element2 = dom.childAt(fragment, [3, 1]);
+        var morph0 = dom.createMorphAt(element1,0,1);
+        var morph1 = dom.createMorphAt(dom.childAt(element1, [2]),0,1);
+        var morph2 = dom.createMorphAt(dom.childAt(element2, [1, 1]),2,3);
+        var morph3 = dom.createMorphAt(dom.childAt(element2, [3]),0,1);
+        content(env, morph0, context, "name");
+        content(env, morph1, context, "rowCount");
+        block(env, morph2, context, "each", [get(env, context, "rowHeader")], {"keyword": "item"}, child0, null);
+        block(env, morph3, context, "each", [get(env, context, "rowData")], {"keyword": "row"}, child1, null);
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('storage-explorer/templates/tables', ['exports'], function (exports) {
+
+  'use strict';
+
+  exports['default'] = Ember.HTMLBars.template((function() {
+    var child0 = (function() {
+      var child0 = (function() {
+        return {
+          isHTMLBars: true,
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("               ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("p");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, content = hooks.content;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
+            content(env, morph0, context, "table.id");
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          if (this.cachedFragment) { dom.repairClonedNode(fragment,[0,1]); }
+          var morph0 = dom.createMorphAt(fragment,0,1,contextualElement);
+          block(env, morph0, context, "link-to", ["table", get(env, context, "table.id")], {}, child0, null);
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1,"class","progress progress-striped active");
+          var el2 = dom.createTextNode("\n        ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("div");
+          dom.setAttribute(el2,"class","progress-bar");
+          dom.setAttribute(el2,"style","width: 100%");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          return fragment;
+        }
+      };
+    }());
+    return {
+      isHTMLBars: true,
+      blockParams: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      build: function build(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1,"class","panel panel-default");
+        var el2 = dom.createTextNode("\n    ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","panel-heading");
+        var el3 = dom.createTextNode("\n        Tables ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("i");
+        var el4 = dom.createTextNode("(");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode(")");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n\n    ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2,"class","panel-body");
+        var el3 = dom.createTextNode("\n");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("    ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      render: function render(context, env, contextualElement) {
+        var dom = env.dom;
+        var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
+        dom.detectNamespace(contextualElement);
+        var fragment;
+        if (env.useFragmentCache && dom.canClone) {
+          if (this.cachedFragment === null) {
+            fragment = this.build(dom);
+            if (this.hasRendered) {
+              this.cachedFragment = fragment;
+            } else {
+              this.hasRendered = true;
+            }
+          }
+          if (this.cachedFragment) {
+            fragment = dom.cloneNode(this.cachedFragment, true);
+          }
+        } else {
+          fragment = this.build(dom);
+        }
+        var element0 = dom.childAt(fragment, [0]);
+        var morph0 = dom.createMorphAt(dom.childAt(element0, [1, 1]),0,1);
+        var morph1 = dom.createMorphAt(dom.childAt(element0, [3]),0,1);
+        var morph2 = dom.createMorphAt(element0,4,-1);
+        var morph3 = dom.createMorphAt(fragment,1,2,contextualElement);
+        content(env, morph0, context, "controller.length");
+        block(env, morph1, context, "each", [get(env, context, "controller")], {"keyword": "table"}, child0, null);
+        block(env, morph2, context, "if", [get(env, context, "showProgress")], {}, child1, null);
+        content(env, morph3, context, "outlet");
+        return fragment;
+      }
+    };
+  }()));
+
+});
+define('storage-explorer/tests/adapters/application.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - adapters');
+  test('adapters/application.js should pass jshint', function() { 
+    ok(true, 'adapters/application.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/app.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - .');
+  test('app.js should pass jshint', function() { 
+    ok(true, 'app.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/controllers/application.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - controllers');
+  test('controllers/application.js should pass jshint', function() { 
+    ok(true, 'controllers/application.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/controllers/error.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - controllers');
+  test('controllers/error.js should pass jshint', function() { 
+    ok(true, 'controllers/error.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/controllers/table.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - controllers');
+  test('controllers/table.js should pass jshint', function() { 
+    ok(true, 'controllers/table.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/helpers/resolver', ['exports', 'ember/resolver', 'storage-explorer/config/environment'], function (exports, Resolver, config) {
+
+  'use strict';
+
+  var resolver = Resolver['default'].create();
+
+  resolver.namespace = {
+    modulePrefix: config['default'].modulePrefix,
+    podModulePrefix: config['default'].podModulePrefix
+  };
+
+  exports['default'] = resolver;
+
+});
+define('storage-explorer/tests/helpers/resolver.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - helpers');
+  test('helpers/resolver.js should pass jshint', function() { 
+    ok(true, 'helpers/resolver.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/helpers/start-app', ['exports', 'ember', 'storage-explorer/app', 'storage-explorer/router', 'storage-explorer/config/environment'], function (exports, Ember, Application, Router, config) {
+
+  'use strict';
+
+
+
+  exports['default'] = startApp;
+  function startApp(attrs) {
+    var App;
+
+    var attributes = Ember['default'].merge({}, config['default'].APP);
+    attributes = Ember['default'].merge(attributes, attrs); // use defaults, but you can override;
+
+    Ember['default'].run(function () {
+      App = Application['default'].create(attributes);
+      App.setupForTesting();
+      App.injectTestHelpers();
+    });
+
+    return App;
+  }
+
+});
+define('storage-explorer/tests/helpers/start-app.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - helpers');
+  test('helpers/start-app.js should pass jshint', function() { 
+    ok(true, 'helpers/start-app.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/models/table.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - models');
+  test('models/table.js should pass jshint', function() { 
+    ok(true, 'models/table.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/router.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - .');
+  test('router.js should pass jshint', function() { 
+    ok(true, 'router.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/routes/table.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - routes');
+  test('routes/table.js should pass jshint', function() { 
+    ok(true, 'routes/table.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/routes/tables.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - routes');
+  test('routes/tables.js should pass jshint', function() { 
+    ok(true, 'routes/tables.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/serializers/table.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - serializers');
+  test('serializers/table.js should pass jshint', function() { 
+    ok(true, 'serializers/table.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/test-helper', ['storage-explorer/tests/helpers/resolver', 'ember-qunit'], function (resolver, ember_qunit) {
+
+	'use strict';
+
+	ember_qunit.setResolver(resolver['default']);
+
+	document.write("<div id=\"ember-testing-container\"><div id=\"ember-testing\"></div></div>");
+
+	QUnit.config.urlConfig.push({ id: "nocontainer", label: "Hide container" });
+	var containerVisibility = QUnit.urlParams.nocontainer ? "hidden" : "visible";
+	document.getElementById("ember-testing-container").style.visibility = containerVisibility;
+
+});
+define('storage-explorer/tests/test-helper.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - .');
+  test('test-helper.js should pass jshint', function() { 
+    ok(true, 'test-helper.js should pass jshint.'); 
+  });
+
+});
 /* jshint ignore:start */
 
 define('storage-explorer/config/environment', ['ember'], function(Ember) {
@@ -81,16 +1367,13 @@ catch(err) {
 
 /* jshint ignore:end */
 
-
-
 });
 
 if (runningTests) {
   require("storage-explorer/tests/test-helper");
 } else {
-  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true});
+  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true,"name":"storage-explorer","version":"0.0.0.5c3b88da"});
 }
 
-
-
 /* jshint ignore:end */
+//# sourceMappingURL=storage-explorer.map

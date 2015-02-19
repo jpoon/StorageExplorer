@@ -6,8 +6,8 @@ var ErrorController = Ember.Controller.extend({
     }.property('content.status'),
 
     response: function() {
-        return this.get('content.responseText');
-    }.property('content.responseText'),
+        return this.get('content.responseText') || this.get('content.statusText');
+    }.property('content.responseText', 'content.statusText'),
 });
 
 export default ErrorController;

@@ -4,9 +4,9 @@
     </div>
 
     <div class="panel-body">
-        {{#each controller}}
-            {{#link-to 'table' tableName}}
-                <p>{{tableName}}</p>
+        {{#each table in controller}}
+            {{#link-to 'table' table.id}}
+               <p>{{table.id}}</p>
             {{/link-to}}
         {{/each}}
     </div>
