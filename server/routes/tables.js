@@ -1,5 +1,6 @@
 ﻿var debug = require('debug')('tables')
     , tableServiceMiddleware = require('../middleware/tableService.js')
+    , camelize = require('../helpers/camelize')
     , azure = require('azure')
     , express = require('express')
     , router = express.Router();
@@ -21,7 +22,6 @@ router.get('/', function (req, res, next) {
         });
 
         res.status(200).json({
-           // name: req.tableService.storageAccount,
             tables: tableNames
         });
     });
@@ -43,30 +43,25 @@ router.get('/:tableName', function (req, res, next) {
         
         var rows = []
         
-        var id = 0;
         result.entries.forEach(function (row) {
             var parsedRow = {};
             for (var propertyName in row) {
                 var propertyValue = row[propertyName]._;
                 
                 if (propertyName && propertyValue) {
-                    parsedRow[propertyName] = propertyValue;
+                    parsedRow[camelize(propertyName)] = propertyValue;
                 }
             }
 
-            parsedRow['id'] = id++;
             rows.push(parsedRow);
         });
 
-        var response = {};
-        response[req.params.tableName] = rows;
-
         res.status(200).json({
-           // name: req.tableService.storageAccount,
-            table: rows
+            tables: {
+                tableName: req.params.tableName,
+                rows: rows 
+            }
         });        
-
-        //res.status(200).json(response);
     });
 });
 

@@ -13,7 +13,7 @@ export default Ember.Route.extend({
     },
 
     model: function(params) {
-        return this.store.find('table', params.tableName);
+        return this.store.fetch('table', params.tableName);
     },
 
     afterModel: function() {

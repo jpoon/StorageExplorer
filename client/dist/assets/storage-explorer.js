@@ -120,7 +120,7 @@ define('storage-explorer/controllers/error', ['exports', 'ember'], function (exp
     exports['default'] = ErrorController;
 
 });
-define('storage-explorer/controllers/table', ['exports', 'ember'], function (exports, Ember) {
+define('storage-explorer/controllers/row', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
 
@@ -199,12 +199,26 @@ define('storage-explorer/initializers/export-application-global', ['exports', 'e
   };
 
 });
+define('storage-explorer/models/row', ['exports', 'ember-data'], function (exports, DS) {
+
+    'use strict';
+
+    var row = DS['default'].Model.extend({
+        partitionKey: DS['default'].attr("string"),
+        rowKey: DS['default'].attr("string"),
+        table: DS['default'].belongsTo("table")
+    });
+
+    exports['default'] = row;
+
+});
 define('storage-explorer/models/table', ['exports', 'ember-data'], function (exports, DS) {
 
     'use strict';
 
     var table = DS['default'].Model.extend({
-        tableName: DS['default'].attr("string")
+        tableName: DS['default'].attr("string"),
+        rows: DS['default'].hasMany("row")
     });
 
     exports['default'] = table;
@@ -219,7 +233,7 @@ define('storage-explorer/router', ['exports', 'ember', 'storage-explorer/config/
     });
 
     Router.map(function () {
-        this.resource("tables", { path: "/table" }, function () {
+        this.resource("tables", { path: "/tables" }, function () {
             this.resource("table", { path: "/:tableName" });
         });
     });
@@ -244,7 +258,7 @@ define('storage-explorer/routes/table', ['exports', 'ember'], function (exports,
         },
 
         model: function (params) {
-            return this.store.find("table", params.tableName);
+            return this.store.fetch("table", params.tableName);
         },
 
         afterModel: function () {
@@ -285,20 +299,28 @@ define('storage-explorer/routes/tables', ['exports', 'ember'], function (exports
     });
 
 });
+define('storage-explorer/serializers/row', ['exports', 'ember-data'], function (exports, DS) {
+
+	'use strict';
+
+	exports['default'] = DS['default'].RESTSerializer.extend(DS['default'].EmbeddedRecordsMixin, {
+		normalize: function (type, hash) {
+			hash.id = hash.partitionKey + "/" + hash.rowKey;
+			return this._super(type, hash);
+		}
+	});
+
+});
 define('storage-explorer/serializers/table', ['exports', 'ember-data'], function (exports, DS) {
 
-    'use strict';
+	'use strict';
 
-    exports['default'] = DS['default'].RESTSerializer.extend({
-        primaryKey: "tableName",
+	exports['default'] = DS['default'].RESTSerializer.extend(DS['default'].EmbeddedRecordsMixin, {
+		primaryKey: "tableName",
 
-        extractSingle: function (store, type, payload, id, requestType) {
-            console.log("!!!!");
-            console.log(payload);
-
-            return this._super(store, type, payload, id, requestType);
-        }
-    });
+		attrs: {
+			rows: { embedded: "always" } }
+	});
 
 });
 define('storage-explorer/templates/application', ['exports'], function (exports) {
@@ -1208,13 +1230,13 @@ define('storage-explorer/tests/controllers/error.jshint', function () {
   });
 
 });
-define('storage-explorer/tests/controllers/table.jshint', function () {
+define('storage-explorer/tests/controllers/row.jshint', function () {
 
   'use strict';
 
   module('JSHint - controllers');
-  test('controllers/table.js should pass jshint', function() { 
-    ok(true, 'controllers/table.js should pass jshint.'); 
+  test('controllers/row.js should pass jshint', function() { 
+    ok(true, 'controllers/row.js should pass jshint.'); 
   });
 
 });
@@ -1275,6 +1297,16 @@ define('storage-explorer/tests/helpers/start-app.jshint', function () {
   });
 
 });
+define('storage-explorer/tests/models/row.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - models');
+  test('models/row.js should pass jshint', function() { 
+    ok(true, 'models/row.js should pass jshint.'); 
+  });
+
+});
 define('storage-explorer/tests/models/table.jshint', function () {
 
   'use strict';
@@ -1312,6 +1344,16 @@ define('storage-explorer/tests/routes/tables.jshint', function () {
   module('JSHint - routes');
   test('routes/tables.js should pass jshint', function() { 
     ok(true, 'routes/tables.js should pass jshint.'); 
+  });
+
+});
+define('storage-explorer/tests/serializers/row.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - serializers');
+  test('serializers/row.js should pass jshint', function() { 
+    ok(true, 'serializers/row.js should pass jshint.'); 
   });
 
 });
@@ -1372,7 +1414,7 @@ catch(err) {
 if (runningTests) {
   require("storage-explorer/tests/test-helper");
 } else {
-  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true,"name":"storage-explorer","version":"0.0.0.5c3b88da"});
+  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true,"name":"storage-explorer","version":"0.0.0.ace9f56b"});
 }
 
 /* jshint ignore:end */
