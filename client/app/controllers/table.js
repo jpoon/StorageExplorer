@@ -1,12 +1,15 @@
 import Ember from 'ember';
 
 export default Ember.ObjectController.extend({
+  itemController: 'tableRow',
+
   showProgress: false,
 
+  /*
   rowCount: function(){
-    return this.get('rows.length');
-  }.property('rows'),
-
+    return this.get('table.length');
+  }.property('table')
+  
   rowHeader: function(){
     var header = {};
 
@@ -17,8 +20,9 @@ export default Ember.ObjectController.extend({
     });
 
     return Object.keys(header);
-  }.property('rows'),
+  }.property('rows')
 
+  /*
   rowData: function(){
     var rows = [];
 
@@ -37,5 +41,5 @@ export default Ember.ObjectController.extend({
 
     return rows;
   }.property('rows', 'rowHeader')
-
+*/
 });

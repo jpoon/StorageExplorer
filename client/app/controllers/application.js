@@ -25,7 +25,8 @@ export default Ember.Controller.extend({
         return;
       }
 
-      return encodeURIComponent(this.get('accountName'));
+      localStorage.storageAccountName = name;
+      return encodeURIComponent(name);
     }.property('accountName'),
 
     storageAccountKey: function() {
@@ -35,6 +36,7 @@ export default Ember.Controller.extend({
         return;
       }
 
+      localStorage.storageAccountKey = key;
       return encodeURIComponent(key);
     }.property('accountKey'),
 

@@ -1,10 +1,10 @@
 <div class="panel panel-default">
     <div class="panel-heading">
-        Tables <i>({{tablesCount}})</i>
+        Tables <i>({{controller.length}})</i>
     </div>
 
     <div class="panel-body">
-        {{#each tableName in tables}}
+        {{#each controller}}
             {{#link-to 'table' tableName}}
                 <p>{{tableName}}</p>
             {{/link-to}}

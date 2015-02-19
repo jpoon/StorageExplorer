@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import config from '../config/environment';
 
 export default Ember.Route.extend({
     beforeModel: function() {
@@ -14,17 +13,7 @@ export default Ember.Route.extend({
     },
 
     model: function() {
-        var storageAccountName = this.controllerFor("application").get('storageAccountName');
-        var storageAccountKey = this.controllerFor("application").get('storageAccountKey');
-
-        var url = config.APP.apiHost + '/tables?account=' + storageAccountName + '&key=' + storageAccountKey;
-        Ember.Logger.info('url', url);
-       
-        var promise =  new Ember.RSVP.Promise(function(resolve,reject) {
-            Ember.$.getJSON(url).then(resolve, reject);
-        });
-
-        return promise;
+        return this.store.find('table');
     },
 
     afterModel: function() {
@@ -32,8 +21,7 @@ export default Ember.Route.extend({
     },
 
     actions: {
-        error: function(error) {
-            Ember.Logger.error(error);
+        error: function() {
             this.controllerFor("application").set('showProgress', false);
             return true;
         }
