@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
-export default Ember.ObjectController.extend({
-  itemController: 'tableRow',
+export default Ember.ArrayController.extend({
+//  itemController: 'tableRow',
 
   showProgress: false,
 

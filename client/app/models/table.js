@@ -1,7 +1,7 @@
 import DS from 'ember-data';
 
-var tables = DS.Model.extend({
+var table = DS.Model.extend({
     tableName: DS.attr('string')
 });
 
-export default tables;
+export default table;

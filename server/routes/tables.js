@@ -58,10 +58,10 @@ router.get('/:tableName', function (req, res, next) {
             rows.push(parsedRow);
         });
 
-        res.status(200).json({
-           // name: req.params.tableName,
-            table: rows
-        });
+        var response = {};
+        response[req.params.tableName] = rows;
+
+        res.status(200).json(response);
     });
 });
 
