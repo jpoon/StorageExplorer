@@ -1,34 +1,29 @@
 import Ember from 'ember';
 
-export default Ember.ArrayController.extend({
-//  itemController: 'tableRow',
-
+export default Ember.ObjectController.extend({
   showProgress: false,
 
-  /*
   rowCount: function(){
-    return this.get('table.length');
-  }.property('table')
+    return this.get('tables.rows.length');
+  }.property('tables.rows'),
   
   rowHeader: function(){
     var header = {};
 
-    this.get('rows').forEach(function(row) {
+    this.get('tables.rows').forEach(function(row) {
       Ember.$.map(row, function(value, key) {
         header[key] = key;
       });
     });
 
     return Object.keys(header);
-  }.property('rows')
+  }.property('tables.rows'),
 
-  /*
   rowData: function(){
     var rows = [];
 
     var rowHeader = this.get('rowHeader');
-
-    this.get('rows').forEach(function(row) {
+    this.get('tables.rows').forEach(function(row) {
         console.log(row);
         rows.push(Ember.$.map(rowHeader, function(header) {
             var value = row[header];
@@ -40,6 +35,6 @@ export default Ember.ArrayController.extend({
     });
 
     return rows;
-  }.property('rows', 'rowHeader')
-*/
+  }.property('tables.rows', 'rowHeader')
+
 });

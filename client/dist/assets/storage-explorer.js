@@ -120,47 +120,48 @@ define('storage-explorer/controllers/error', ['exports', 'ember'], function (exp
     exports['default'] = ErrorController;
 
 });
-define('storage-explorer/controllers/row', ['exports', 'ember'], function (exports, Ember) {
+define('storage-explorer/controllers/table', ['exports', 'ember'], function (exports, Ember) {
 
   'use strict';
 
-  exports['default'] = Ember['default'].ArrayController.extend({
-    //  itemController: 'tableRow',
+  exports['default'] = Ember['default'].ObjectController.extend({
+    showProgress: false,
 
-    showProgress: false });
+    rowCount: (function () {
+      return this.get("tables.rows.length");
+    }).property("tables.rows"),
 
+    rowHeader: (function () {
+      var header = {};
 
-  /*
-  rowCount: function(){
-    return this.get('table.length');
-  }.property('table')
-
-  rowHeader: function(){
-    var header = {};
-     this.get('rows').forEach(function(row) {
-      Ember.$.map(row, function(value, key) {
-        header[key] = key;
+      this.get("tables.rows").forEach(function (row) {
+        Ember['default'].$.map(row, function (value, key) {
+          header[key] = key;
+        });
       });
-    });
-     return Object.keys(header);
-  }.property('rows')
-   /*
-  rowData: function(){
-    var rows = [];
-     var rowHeader = this.get('rowHeader');
-     this.get('rows').forEach(function(row) {
+
+      return Object.keys(header);
+    }).property("tables.rows"),
+
+    rowData: (function () {
+      var rows = [];
+
+      var rowHeader = this.get("rowHeader");
+      this.get("tables.rows").forEach(function (row) {
         console.log(row);
-        rows.push(Ember.$.map(rowHeader, function(header) {
-            var value = row[header];
-            if (value === undefined) {
-              value = '';
-            }
-            return value;
+        rows.push(Ember['default'].$.map(rowHeader, function (header) {
+          var value = row[header];
+          if (value === undefined) {
+            value = "";
+          }
+          return value;
         }));
-    });
-     return rows;
-  }.property('rows', 'rowHeader')
-  */
+      });
+
+      return rows;
+    }).property("tables.rows", "rowHeader")
+
+  });
 
 });
 define('storage-explorer/initializers/app-version', ['exports', 'storage-explorer/config/environment', 'ember'], function (exports, config, Ember) {
@@ -241,7 +242,7 @@ define('storage-explorer/router', ['exports', 'ember', 'storage-explorer/config/
     exports['default'] = Router;
 
 });
-define('storage-explorer/routes/table', ['exports', 'ember'], function (exports, Ember) {
+define('storage-explorer/routes/table', ['exports', 'ember', 'storage-explorer/config/environment'], function (exports, Ember, config) {
 
     'use strict';
 
@@ -258,7 +259,15 @@ define('storage-explorer/routes/table', ['exports', 'ember'], function (exports,
         },
 
         model: function (params) {
-            return this.store.fetch("table", params.tableName);
+            var storageAccountName = this.controllerFor("application").get("storageAccountName");
+            var storageAccountKey = this.controllerFor("application").get("storageAccountKey");
+            var url = config['default'].APP.apiHost + "/tables/" + params.tableName + "?account=" + storageAccountName + "&key=" + storageAccountKey;
+            Ember['default'].Logger.info("url", url);
+
+            return Ember['default'].$.getJSON(url).fail(function (error) {
+                throw new Error(error);
+            });
+            //return this.store.fetchById('table', params.tableName);
         },
 
         afterModel: function () {
@@ -967,7 +976,7 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
         var morph1 = dom.createMorphAt(dom.childAt(element1, [2]),0,1);
         var morph2 = dom.createMorphAt(dom.childAt(element2, [1, 1]),2,3);
         var morph3 = dom.createMorphAt(dom.childAt(element2, [3]),0,1);
-        content(env, morph0, context, "name");
+        content(env, morph0, context, "tables.tableName");
         content(env, morph1, context, "rowCount");
         block(env, morph2, context, "each", [get(env, context, "rowHeader")], {"keyword": "item"}, child0, null);
         block(env, morph3, context, "each", [get(env, context, "rowData")], {"keyword": "row"}, child1, null);
@@ -1230,13 +1239,13 @@ define('storage-explorer/tests/controllers/error.jshint', function () {
   });
 
 });
-define('storage-explorer/tests/controllers/row.jshint', function () {
+define('storage-explorer/tests/controllers/table.jshint', function () {
 
   'use strict';
 
   module('JSHint - controllers');
-  test('controllers/row.js should pass jshint', function() { 
-    ok(true, 'controllers/row.js should pass jshint.'); 
+  test('controllers/table.js should pass jshint', function() { 
+    ok(true, 'controllers/table.js should pass jshint.'); 
   });
 
 });
@@ -1414,7 +1423,7 @@ catch(err) {
 if (runningTests) {
   require("storage-explorer/tests/test-helper");
 } else {
-  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true,"name":"storage-explorer","version":"0.0.0.ace9f56b"});
+  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true,"name":"storage-explorer","version":"0.0.0.cc6b8766"});
 }
 
 /* jshint ignore:end */
