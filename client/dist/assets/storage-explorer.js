@@ -199,6 +199,19 @@ define('storage-explorer/initializers/export-application-global', ['exports', 'e
   };
 
 });
+define('storage-explorer/models/column', ['exports', 'ember-data'], function (exports, DS) {
+
+    'use strict';
+
+    var column = DS['default'].Model.extend({
+        key: DS['default'].attr("string"),
+        value: DS['default'].attr("string"),
+        row: DS['default'].belongsTo("row")
+    });
+
+    exports['default'] = column;
+
+});
 define('storage-explorer/models/row', ['exports', 'ember-data'], function (exports, DS) {
 
     'use strict';
@@ -206,7 +219,8 @@ define('storage-explorer/models/row', ['exports', 'ember-data'], function (expor
     var row = DS['default'].Model.extend({
         partitionKey: DS['default'].attr("string"),
         rowKey: DS['default'].attr("string"),
-        table: DS['default'].belongsTo("table")
+        table: DS['default'].belongsTo("table"),
+        columns: DS['default'].hasMany("column")
     });
 
     exports['default'] = row;
@@ -253,11 +267,11 @@ define('storage-explorer/routes/table', ['exports', 'ember', 'storage-explorer/c
             if (!name || !key) {
                 this.transitionTo("application");
             }
-
-            this.controllerFor("tables").set("showProgress", true);
         },
 
         model: function (params) {
+            this.controllerFor("tables").set("showProgress", true);
+
             var storageAccountName = this.controllerFor("application").get("storageAccountName");
             var storageAccountKey = this.controllerFor("application").get("storageAccountKey");
             var url = config['default'].APP.apiHost + "/tables/" + params.tableName + "?account=" + storageAccountName + "&key=" + storageAccountKey;
@@ -286,11 +300,10 @@ define('storage-explorer/routes/tables', ['exports', 'ember'], function (exports
             if (!name || !key) {
                 this.transitionTo("application");
             }
-
-            this.controllerFor("application").set("showProgress", true);
         },
 
         model: function () {
+            this.controllerFor("application").set("showProgress", true);
             return this.store.find("table");
         },
 
@@ -315,7 +328,10 @@ define('storage-explorer/serializers/row', ['exports', 'ember-data'], function (
 		normalize: function (type, hash) {
 			hash.id = hash.partitionKey + "/" + hash.rowKey;
 			return this._super(type, hash);
-		}
+		},
+
+		attrs: {
+			columns: { embedded: "always" } }
 	});
 
 });
@@ -325,6 +341,11 @@ define('storage-explorer/serializers/table', ['exports', 'ember-data'], function
 
 	exports['default'] = DS['default'].RESTSerializer.extend(DS['default'].EmbeddedRecordsMixin, {
 		primaryKey: "tableName",
+
+		extractArray: function (store, type, payload) {
+			console.log(payload);
+			return this._super(store, type, payload);
+		},
 
 		attrs: {
 			rows: { embedded: "always" } }
@@ -742,48 +763,6 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
 
   exports['default'] = Ember.HTMLBars.template((function() {
     var child0 = (function() {
-      return {
-        isHTMLBars: true,
-        blockParams: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        build: function build(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("                      ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("th");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        render: function render(context, env, contextualElement) {
-          var dom = env.dom;
-          var hooks = env.hooks, content = hooks.content;
-          dom.detectNamespace(contextualElement);
-          var fragment;
-          if (env.useFragmentCache && dom.canClone) {
-            if (this.cachedFragment === null) {
-              fragment = this.build(dom);
-              if (this.hasRendered) {
-                this.cachedFragment = fragment;
-              } else {
-                this.hasRendered = true;
-              }
-            }
-            if (this.cachedFragment) {
-              fragment = dom.cloneNode(this.cachedFragment, true);
-            }
-          } else {
-            fragment = this.build(dom);
-          }
-          var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
-          content(env, morph0, context, "item");
-          return fragment;
-        }
-      };
-    }());
-    var child1 = (function() {
       var child0 = (function() {
         return {
           isHTMLBars: true,
@@ -794,7 +773,7 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
             var el0 = dom.createDocumentFragment();
             var el1 = dom.createTextNode("                      ");
             dom.appendChild(el0, el1);
-            var el1 = dom.createElement("td");
+            var el1 = dom.createElement("th");
             dom.appendChild(el0, el1);
             var el1 = dom.createTextNode("\n");
             dom.appendChild(el0, el1);
@@ -821,7 +800,7 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
               fragment = this.build(dom);
             }
             var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
-            content(env, morph0, context, "column");
+            content(env, morph0, context, "item");
             return fragment;
           }
         };
@@ -833,16 +812,24 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
         hasRendered: false,
         build: function build(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("                    ");
+          var el1 = dom.createTextNode("            ");
           dom.appendChild(el0, el1);
-          var el1 = dom.createElement("tr");
-          var el2 = dom.createTextNode("\n                    ");
+          var el1 = dom.createElement("thead");
+          var el2 = dom.createTextNode("\n                ");
           dom.appendChild(el1, el2);
-          var el2 = dom.createElement("td");
+          var el2 = dom.createElement("tr");
+          var el3 = dom.createTextNode("\n                    ");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createElement("th");
+          var el4 = dom.createTextNode("#");
+          dom.appendChild(el3, el4);
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("\n");
+          dom.appendChild(el2, el3);
+          var el3 = dom.createTextNode("                ");
+          dom.appendChild(el2, el3);
           dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("\n");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("                    ");
+          var el2 = dom.createTextNode("\n            ");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
@@ -851,7 +838,7 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
         },
         render: function render(context, env, contextualElement) {
           var dom = env.dom;
-          var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
           dom.detectNamespace(contextualElement);
           var fragment;
           if (env.useFragmentCache && dom.canClone) {
@@ -869,11 +856,149 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
           } else {
             fragment = this.build(dom);
           }
-          var element0 = dom.childAt(fragment, [1]);
-          var morph0 = dom.createMorphAt(dom.childAt(element0, [1]),-1,-1);
-          var morph1 = dom.createMorphAt(element0,2,3);
-          content(env, morph0, context, "_view.contentIndex");
-          block(env, morph1, context, "each", [get(env, context, "row")], {"keyword": "column"}, child0, null);
+          var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1]),2,3);
+          block(env, morph0, context, "each", [get(env, context, "rowHeader")], {"keyword": "item"}, child0, null);
+          return fragment;
+        }
+      };
+    }());
+    var child1 = (function() {
+      var child0 = (function() {
+        var child0 = (function() {
+          return {
+            isHTMLBars: true,
+            blockParams: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            build: function build(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("                      ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("td");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            render: function render(context, env, contextualElement) {
+              var dom = env.dom;
+              var hooks = env.hooks, content = hooks.content;
+              dom.detectNamespace(contextualElement);
+              var fragment;
+              if (env.useFragmentCache && dom.canClone) {
+                if (this.cachedFragment === null) {
+                  fragment = this.build(dom);
+                  if (this.hasRendered) {
+                    this.cachedFragment = fragment;
+                  } else {
+                    this.hasRendered = true;
+                  }
+                }
+                if (this.cachedFragment) {
+                  fragment = dom.cloneNode(this.cachedFragment, true);
+                }
+              } else {
+                fragment = this.build(dom);
+              }
+              var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),-1,-1);
+              content(env, morph0, context, "column");
+              return fragment;
+            }
+          };
+        }());
+        return {
+          isHTMLBars: true,
+          blockParams: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          build: function build(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("                    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("tr");
+            var el2 = dom.createTextNode("\n                    ");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createElement("td");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("\n");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("                    ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          render: function render(context, env, contextualElement) {
+            var dom = env.dom;
+            var hooks = env.hooks, content = hooks.content, get = hooks.get, block = hooks.block;
+            dom.detectNamespace(contextualElement);
+            var fragment;
+            if (env.useFragmentCache && dom.canClone) {
+              if (this.cachedFragment === null) {
+                fragment = this.build(dom);
+                if (this.hasRendered) {
+                  this.cachedFragment = fragment;
+                } else {
+                  this.hasRendered = true;
+                }
+              }
+              if (this.cachedFragment) {
+                fragment = dom.cloneNode(this.cachedFragment, true);
+              }
+            } else {
+              fragment = this.build(dom);
+            }
+            var element0 = dom.childAt(fragment, [1]);
+            var morph0 = dom.createMorphAt(dom.childAt(element0, [1]),-1,-1);
+            var morph1 = dom.createMorphAt(element0,2,3);
+            content(env, morph0, context, "_view.contentIndex");
+            block(env, morph1, context, "each", [get(env, context, "row")], {"keyword": "column"}, child0, null);
+            return fragment;
+          }
+        };
+      }());
+      return {
+        isHTMLBars: true,
+        blockParams: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        build: function build(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("            ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("tbody");
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("            ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        render: function render(context, env, contextualElement) {
+          var dom = env.dom;
+          var hooks = env.hooks, get = hooks.get, block = hooks.block;
+          dom.detectNamespace(contextualElement);
+          var fragment;
+          if (env.useFragmentCache && dom.canClone) {
+            if (this.cachedFragment === null) {
+              fragment = this.build(dom);
+              if (this.hasRendered) {
+                this.cachedFragment = fragment;
+              } else {
+                this.hasRendered = true;
+              }
+            }
+            if (this.cachedFragment) {
+              fragment = dom.cloneNode(this.cachedFragment, true);
+            }
+          } else {
+            fragment = this.build(dom);
+          }
+          var morph0 = dom.createMorphAt(dom.childAt(fragment, [1]),0,1);
+          block(env, morph0, context, "each", [get(env, context, "rowData")], {"keyword": "row"}, child0, null);
           return fragment;
         }
       };
@@ -909,35 +1034,11 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("table");
         dom.setAttribute(el2,"class","table table-striped table-hover");
-        var el3 = dom.createTextNode("\n            ");
+        var el3 = dom.createTextNode("\n");
         dom.appendChild(el2, el3);
-        var el3 = dom.createElement("thead");
-        var el4 = dom.createTextNode("\n                ");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createElement("tr");
-        var el5 = dom.createTextNode("\n                    ");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createElement("th");
-        var el6 = dom.createTextNode("#");
-        dom.appendChild(el5, el6);
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("\n");
-        dom.appendChild(el4, el5);
-        var el5 = dom.createTextNode("                ");
-        dom.appendChild(el4, el5);
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("\n            ");
-        dom.appendChild(el3, el4);
+        var el3 = dom.createTextNode("\n");
         dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n\n            ");
-        dom.appendChild(el2, el3);
-        var el3 = dom.createElement("tbody");
-        var el4 = dom.createTextNode("\n");
-        dom.appendChild(el3, el4);
-        var el4 = dom.createTextNode("            ");
-        dom.appendChild(el3, el4);
-        dom.appendChild(el2, el3);
-        var el3 = dom.createTextNode("\n        ");
+        var el3 = dom.createTextNode("        ");
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
         var el2 = dom.createTextNode("\n    ");
@@ -969,11 +1070,11 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
         }
         var element1 = dom.childAt(fragment, [3, 1]);
         var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1]),0,1);
-        var morph1 = dom.createMorphAt(dom.childAt(element1, [1, 1]),2,3);
-        var morph2 = dom.createMorphAt(dom.childAt(element1, [3]),0,1);
+        var morph1 = dom.createMorphAt(element1,0,1);
+        var morph2 = dom.createMorphAt(element1,1,2);
         content(env, morph0, context, "rowCount");
-        block(env, morph1, context, "each", [get(env, context, "rowHeader")], {"keyword": "item"}, child0, null);
-        block(env, morph2, context, "each", [get(env, context, "rowData")], {"keyword": "row"}, child1, null);
+        block(env, morph1, context, "if", [get(env, context, "rowHeader")], {}, child0, null);
+        block(env, morph2, context, "if", [get(env, context, "rowData")], {}, child1, null);
         return fragment;
       }
     };
@@ -1300,6 +1401,16 @@ define('storage-explorer/tests/helpers/start-app.jshint', function () {
   });
 
 });
+define('storage-explorer/tests/models/column.jshint', function () {
+
+  'use strict';
+
+  module('JSHint - models');
+  test('models/column.js should pass jshint', function() { 
+    ok(true, 'models/column.js should pass jshint.'); 
+  });
+
+});
 define('storage-explorer/tests/models/row.jshint', function () {
 
   'use strict';
@@ -1417,7 +1528,7 @@ catch(err) {
 if (runningTests) {
   require("storage-explorer/tests/test-helper");
 } else {
-  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true,"name":"storage-explorer","version":"0.0.0.e7e7c28c"});
+  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true,"name":"storage-explorer","version":"0.0.0.4417bad4"});
 }
 
 /* jshint ignore:end */

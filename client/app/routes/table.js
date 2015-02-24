@@ -9,11 +9,11 @@ export default Ember.Route.extend({
         if (!name || !key) {
             this.transitionTo('application');
         }
-
-        this.controllerFor('tables').set('showProgress', true);
     },
 
     model: function(params) {
+        this.controllerFor('tables').set('showProgress', true);
+
         var storageAccountName = this.controllerFor("application").get('storageAccountName');
         var storageAccountKey = this.controllerFor("application").get('storageAccountKey');
         var url = config.APP.apiHost + '/tables/' + params.tableName + '?account=' + storageAccountName + '&key=' + storageAccountKey;

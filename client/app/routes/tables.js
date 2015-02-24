@@ -8,11 +8,10 @@ export default Ember.Route.extend({
         if (!name || !key) {
             this.transitionTo('application');
         }
-
-        this.controllerFor("application").set('showProgress', true);
     },
 
     model: function() {
+        this.controllerFor("application").set('showProgress', true);
         return this.store.find('table');
     },
 
