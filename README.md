@@ -3,19 +3,22 @@
 [![Dependency Status](https://david-dm.org/jpoon/StorageExplorer.svg)](https://david-dm.org/jpoon/StorageExplorer)
 [![devDependency Status](https://david-dm.org/jpoon/StorageExplorer/dev-status.svg)](https://david-dm.org/jpoon/StorageExplorer#info=devDependencies)
 
+##Context
+While developing my Azure app on my Arch Linux box, I realized that there is no multi-platform Azure Storage Explorer solution. This project was created to satisfy that need. 
 
-In my endeavour to learn new things, I am building an web-based Azure Table Storage Explorer. 
+As its name suggests, Azure Table Storage Explorer is a web-based Azure table storage explorer. 
 
+##Getting Started
 
-##Implementation Notes
+The app is broken into two components: server and client. To start the app, run the server:
 
-Here are my current implementation plans:
+* `cd /server`
+* `npm install`
+* `npm install -g grunt-cli`
+* `grunt`
 
-###Client
-* Ember
+Run the client:
 
-###Server
-* Node.js
-
-##Caveats
-* Work in progress
+* `cd /client`
+* `npm install`
+* `ember serve`
