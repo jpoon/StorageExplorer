@@ -33,7 +33,7 @@ router.get('/:tableName', function (req, res, next) {
     }
 
     var query = new azure.TableQuery()
-                         .top(50);
+                         .top(100);
 
     req.tableService.queryEntities(req.params.tableName, query, null, function (error, result, response) {
         if (error) {
@@ -56,12 +56,7 @@ router.get('/:tableName', function (req, res, next) {
             rows.push(parsedRow);
         });
 
-        res.status(200).json({
-            tables: {
-                tableName: req.params.tableName,
-                rows: rows 
-            }
-        });        
+        res.status(200).json(rows);        
     });
 });
 

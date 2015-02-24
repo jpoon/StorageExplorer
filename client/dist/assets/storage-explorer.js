@@ -124,31 +124,30 @@ define('storage-explorer/controllers/table', ['exports', 'ember'], function (exp
 
   'use strict';
 
-  exports['default'] = Ember['default'].ObjectController.extend({
+  exports['default'] = Ember['default'].ArrayController.extend({
     showProgress: false,
 
     rowCount: (function () {
-      return this.get("tables.rows.length");
-    }).property("tables.rows"),
+      return this.get("content").length;
+    }).property("content"),
 
     rowHeader: (function () {
       var header = {};
 
-      this.get("tables.rows").forEach(function (row) {
+      this.get("content").forEach(function (row) {
         Ember['default'].$.map(row, function (value, key) {
           header[key] = key;
         });
       });
 
       return Object.keys(header);
-    }).property("tables.rows"),
+    }).property("content"),
 
     rowData: (function () {
       var rows = [];
 
       var rowHeader = this.get("rowHeader");
-      this.get("tables.rows").forEach(function (row) {
-        console.log(row);
+      this.get("content").forEach(function (row) {
         rows.push(Ember['default'].$.map(rowHeader, function (header) {
           var value = row[header];
           if (value === undefined) {
@@ -159,7 +158,7 @@ define('storage-explorer/controllers/table', ['exports', 'ember'], function (exp
       });
 
       return rows;
-    }).property("tables.rows", "rowHeader")
+    }).property("content", "rowHeader")
 
   });
 
@@ -891,9 +890,7 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
         dom.appendChild(el0, el1);
         var el1 = dom.createElement("div");
         dom.setAttribute(el1,"class","panel-heading");
-        var el2 = dom.createTextNode("\n        ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode(" ");
+        var el2 = dom.createTextNode("\n        Rows ");
         dom.appendChild(el1, el2);
         var el2 = dom.createElement("i");
         var el3 = dom.createTextNode("(");
@@ -970,16 +967,13 @@ define('storage-explorer/templates/table', ['exports'], function (exports) {
         } else {
           fragment = this.build(dom);
         }
-        var element1 = dom.childAt(fragment, [1]);
-        var element2 = dom.childAt(fragment, [3, 1]);
-        var morph0 = dom.createMorphAt(element1,0,1);
-        var morph1 = dom.createMorphAt(dom.childAt(element1, [2]),0,1);
-        var morph2 = dom.createMorphAt(dom.childAt(element2, [1, 1]),2,3);
-        var morph3 = dom.createMorphAt(dom.childAt(element2, [3]),0,1);
-        content(env, morph0, context, "tables.tableName");
-        content(env, morph1, context, "rowCount");
-        block(env, morph2, context, "each", [get(env, context, "rowHeader")], {"keyword": "item"}, child0, null);
-        block(env, morph3, context, "each", [get(env, context, "rowData")], {"keyword": "row"}, child1, null);
+        var element1 = dom.childAt(fragment, [3, 1]);
+        var morph0 = dom.createMorphAt(dom.childAt(fragment, [1, 1]),0,1);
+        var morph1 = dom.createMorphAt(dom.childAt(element1, [1, 1]),2,3);
+        var morph2 = dom.createMorphAt(dom.childAt(element1, [3]),0,1);
+        content(env, morph0, context, "rowCount");
+        block(env, morph1, context, "each", [get(env, context, "rowHeader")], {"keyword": "item"}, child0, null);
+        block(env, morph2, context, "each", [get(env, context, "rowData")], {"keyword": "row"}, child1, null);
         return fragment;
       }
     };
@@ -1423,7 +1417,7 @@ catch(err) {
 if (runningTests) {
   require("storage-explorer/tests/test-helper");
 } else {
-  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true,"name":"storage-explorer","version":"0.0.0.cc6b8766"});
+  require("storage-explorer/app")["default"].create({"apiHost":"http://localhost:3000","LOG_RESOLVER":true,"LOG_ACTIVE_GENERATION":true,"LOG_TRANSITIONS":true,"LOG_TRANSITIONS_INTERNAL":true,"LOG_VIEW_LOOKUPS":true,"name":"storage-explorer","version":"0.0.0.e7e7c28c"});
 }
 
 /* jshint ignore:end */
