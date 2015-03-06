@@ -1,12 +1,20 @@
 import Ember from 'ember';
 
-export default Ember.ArrayController.extend({
-  showProgress: false,
+export default Ember.ObjectController.extend({
+  /*
+  sortedRows: (function() {
+    return Ember.ArrayProxy.createWithMixins(Ember.SortableMixin, {
+      sortProperties: 'rowKey',
+      sortAscending: true,
+      content: this.get('content.rows')
+    });
+  }).property('content.rows'),*/
 
   rowCount: function(){
-    return this.get('content').length;
-  }.property('content'),
-  
+    return this.get('content.rows').length;
+  }.property('content.rows')
+ 
+ /* 
   rowHeader: function(){
     var header = {};
 
@@ -35,5 +43,5 @@ export default Ember.ArrayController.extend({
 
     return rows;
   }.property('content', 'rowHeader')
-
+*/
 });

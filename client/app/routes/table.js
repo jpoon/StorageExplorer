@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import config from '../config/environment';
 
 export default Ember.Route.extend({
     beforeModel: function() {
@@ -13,17 +12,7 @@ export default Ember.Route.extend({
 
     model: function(params) {
         this.controllerFor('tables').set('showProgress', true);
-
-        var storageAccountName = this.controllerFor("application").get('storageAccountName');
-        var storageAccountKey = this.controllerFor("application").get('storageAccountKey');
-        var url = config.APP.apiHost + '/tables/' + params.tableName + '?account=' + storageAccountName + '&key=' + storageAccountKey;
-        Ember.Logger.info('url', url);
-
-        return Ember.$.getJSON(url)     
-                    .fail(function(error) {
-                        throw new Error(error);
-                    });
-        //return this.store.fetchById('table', params.tableName);
+        return this.store.fetchById('table', params.tableName);
     },
 
     afterModel: function() {
