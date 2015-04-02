@@ -1,6 +1,5 @@
 ﻿var debug = require('debug')('tables')
     , tableServiceMiddleware = require('../middleware/tableService.js')
-    , camelize = require('../helpers/camelize')
     , _ = require('lodash')
     , azure = require('azure')
     , express = require('express')
@@ -41,29 +40,34 @@ router.get('/:tableName', function (req, res, next) {
         }
 
         // column heading
-        var headerList = _(result.entries).slice(0, 25).map(function(row) {
-            return Object.keys(row);
-        });
+        var peekSize = 30;
 
-        var uniqueHeaders = headerList.flatten().unique().reject(function(header) {
-            return _.startsWith(header, '.metadata');
-        });
+        var heading = [];
+        _(result.entries).slice(0, peekSize).forEach(function(row) {
+            _.map(Object.keys(row), function(key) {
+                if (!_.isEqual(key, '.metadata')) {
+                    heading.push(_.camelCase(key));
+                }
+            });
+        }).value();
 
-        console.log(uniqueHeaders.value());
+        var uniqueHeadings = _.unique(heading);
+
         var rows = []
         result.entries.forEach(function (row) {
             var parsedRow = {};
+
+            uniqueHeadings.forEach(function(header) {
+                parsedRow[header] = "";
+            });
+
             for (var propertyName in row) {
                 var propertyValue = row[propertyName]._;
 
                 if (propertyName && propertyValue) {
-                    parsedRow[camelize(propertyName)] = propertyValue;
+                    parsedRow[_.camelCase(propertyName)] = propertyValue;
                 }
             }
-
-            uniqueHeaders.difference(Object.keys(row)).forEach(function (nullHeader) {
-                parsedRow[nullHeader] = "";
-            }).value();
 
             rows.push(parsedRow);
         });
