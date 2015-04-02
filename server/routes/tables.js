@@ -75,6 +75,7 @@ router.get('/:tableName', function (req, res, next) {
         res.status(200).json({
             tables: {
                 tableName: req.params.tableName,
+                headings: uniqueHeadings,
                 rows: rows
             }
         });
