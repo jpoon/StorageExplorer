@@ -1,16 +1,10 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-    beforeModel: function() {
-        var name = this.controllerFor('application').get('storageAccountName');
-        var key = this.controllerFor('application').get('storageAccountKey');
+    model: function(param) {
+        this.controllerFor("application").set('storageAccountName', param.storageAccountName);
+        this.controllerFor("application").set('storageAccountKey', param.storageAccountKey);
 
-        if (!name || !key) {
-            this.transitionTo('application');
-        }
-    },
-
-    model: function() {
         this.controllerFor("application").set('showProgress', true);
         return this.store.find('table');
     },

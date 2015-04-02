@@ -19,13 +19,4 @@ export default DS.RESTAdapter.extend({
 
         return this._super(url, type, hash);
     }
-
-	/*
-	headers: function() {
-		return {
-			"storage_account_name": localStorage.storageAccountName,
-	        "storage_account_key": localStorage.storageAccountKey
-		};
-	}.property().volatile()
-	*/
 });
