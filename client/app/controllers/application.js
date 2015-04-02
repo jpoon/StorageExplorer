@@ -2,7 +2,9 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
     init: function() {
-      this._super(); 
+      this._super();
+      this.set('storageAccountName', localStorage.storageAccountName);
+      this.set('storageAccountKey', localStorage.storageAccountKey);
     },
 
     showProgress: false,
@@ -18,9 +20,17 @@ export default Ember.Controller.extend({
       return true;
     }.property('storageAccountName', 'storageAccountKey'),
 
+    storageAccountNameChanged: function() {
+      localStorage.storageAccountName = this.get('storageAccountName');
+    }.observes('storageAccountName'),
+
+    storageAccountKeyChanged: function() {
+      localStorage.storageAccountKey = this.get('storageAccountKey');
+    }.observes('storageAccountKey'),
+
     actions: {
         load: function () {
-            this.transitionToRoute('tables', this.get('storageAccountName'), this.get('storageAccountKey')); 
+            this.transitionToRoute('tables');
         }
     }
 });
