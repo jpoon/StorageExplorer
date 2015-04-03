@@ -31,7 +31,7 @@ router.get('/:tableName', function (req, res, next) {
         return next({ status: 400 });
     }
 
-    var query = new azure.TableQuery();
+    var query = new azure.TableQuery().top(25);
 
     req.tableService.queryEntities(req.params.tableName, query, null, function (error, result, response) {
         if (error) {

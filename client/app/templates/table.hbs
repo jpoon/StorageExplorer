@@ -10,14 +10,18 @@
                 <tr>
                     <th>#</th>
                     {{#each heading in headings}}
-                      <th>{{heading}}</th>
+                      <th {{action "sortBy" heading}}>
+                        <button type="button" class="btn btn-sm pull-left">
+                          <span {{bind-attr class="glyphiconDirection :glyphicon"}} /> {{heading}}
+                        </button>                      
+                      </th>
                     {{/each}}
                 </tr>
             </thead>
             {{/if}}
             
             <tbody>
-                {{#each row in rows}}
+                {{#each row in sortedRows}}
                     <tr>
                         <td>{{_view.contentIndex}}</td>
                         {{#each column in row.columns}}
