@@ -10,16 +10,15 @@
                 <tr>
                     <th>#</th>
                     {{#each heading in headings}}
-                      <th {{action "sortBy" heading}}>
-                        <button type="button" class="btn btn-sm pull-left">
-                          <span {{bind-attr class="glyphiconDirection :glyphicon"}} /> {{heading}}
-                        </button>                      
+                      <th nowrap {{action "sortBy" heading}}>
+                          <span {{bind-attr class=":glyphicon glyphiconDirection"}} aria-hidden="true" />
+                          {{heading}}
                       </th>
                     {{/each}}
                 </tr>
             </thead>
             {{/if}}
-            
+
             <tbody>
                 {{#each row in sortedRows}}
                     <tr>
