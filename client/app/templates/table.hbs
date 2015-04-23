@@ -20,14 +20,7 @@
             {{/if}}
 
             <tbody>
-                {{#each row in sortedRows}}
-                    <tr>
-                        <td>{{_view.contentIndex}}</td>
-                        {{#each column in row.columns}}
-                            <td>{{column.value}}</td>
-                        {{/each}}
-                    </tr>
-                {{/each}}
+                {{render 'row' model.rows}}
             </tbody>
         </table>
     </div>
