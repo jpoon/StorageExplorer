@@ -14,7 +14,7 @@
     "ember-qunit-notifications": "~0.0.7",
     "qunit": "~1.17.1",
     "bootstrap": "~3.3.2",
-    "bootstrap-material-design": "~0.2.1"
+    "bootswatch-dist": "flatly"
   },
   "resolutions": {
     "ember": ">= 1.8.1 < 2.0.0"

@@ -8,17 +8,11 @@ var app = new EmberApp({
 	}
 });
 
-app.import('bower_components/bootstrap/dist/js/bootstrap.js');
-app.import('bower_components/bootstrap/dist/css/bootstrap.css');
-app.import('bower_components/bootstrap/dist/fonts/glyphicons-halflings-regular.woff', {
+app.import('bower_components/bootswatch-dist/js/bootstrap.min.js');
+app.import('bower_components/bootswatch-dist/css/bootstrap.min.css');
+app.import('bower_components/bootswatch-dist/fonts/glyphicons-halflings-regular.woff', {
   destDir: 'fonts'
 });
-app.import('bower_components/bootstrap-material-design/dist/js/material.js');
-app.import('bower_components/bootstrap-material-design/dist/js/ripples.js');
-app.import('bower_components/bootstrap-material-design/dist/css/material-wfont.min.css');
-app.import('bower_components/bootstrap-material-design/dist/css/material.css');
-app.import('bower_components/bootstrap-material-design/dist/css/ripples.css');
-app.import('bower_components/bootstrap-material-design/dist/css/ripples.css.map');
 
 // Use `app.import` to add additional libraries to the generated
 // output files.
