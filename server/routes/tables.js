@@ -26,6 +26,8 @@ router.get('/', function (req, res, next) {
 
 router.get('/:tableName', function (req, res, next) {
     var tableHeadersTop = 25;
+    // column heading
+    var peekSize = 25;
 
     if (!req.params.tableName) {
         return next({ status: 400 });
@@ -39,37 +41,39 @@ router.get('/:tableName', function (req, res, next) {
             return next({ status: 500, message: error });
         }
 
-        // column heading
-        var peekSize = 30;
-
         var heading = [];
-        _(result.entries).slice(0, peekSize).forEach(function(row) {
+        _.take(result.entries, tableHeadersTop).forEach(function(row) {
             _.map(Object.keys(row), function(key) {
                 if (!_.isEqual(key, '.metadata')) {
-                    heading.push(_.camelCase(key));
+                    heading.push(key);
                 }
             });
-        }).value();
+        });
 
         var uniqueHeadings = _.unique(heading);
 
         var rows = []
-        result.entries.forEach(function (row) {
+        _.forEach(result.entries, function(row) {
             var parsedRow = {};
 
-            uniqueHeadings.forEach(function(header) {
-                parsedRow[header] = "";
+            console.log(row);
+            _.forEach(uniqueHeadings, function(header) {
+                var propertyName = header;
+                var propertyValue = row[header];
+
+                console.log(header);
+                if (propertyValue) {
+                    parsedRow[propertyName] = propertyValue._;
+                } else {
+                    parsedRow[propertyName] = "";
+                }
             });
 
-            for (var propertyName in row) {
-                var propertyValue = row[propertyName]._;
-
-                if (propertyName && propertyValue) {
-                    parsedRow[_.camelCase(propertyName)] = propertyValue;
-                }
-            }
-
             rows.push(parsedRow);
+        });
+
+        _.forEach(uniqueHeadings, function(element, index){
+             uniqueHeadings[index] = element;
         });
 
         res.status(200).json({
