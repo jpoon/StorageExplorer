@@ -4,6 +4,18 @@
     </div>
 
     <div class="panel-body table-responsive">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="input-group">
+                    {{input value=entityQuery type="text" class="form-control floating-label" placeholder="query (e.g. PartitionKey gt foo-bar)"}}
+                    <span class="input-group-btn"><button class="btn btn-primary" type="button" {{action 'query'}}>Go!</button></span>
+                    <span class="input-group-btn"><button class="btn btn-default" type="button" {{action 'reset'}}>Reset</button></span>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
         <table class="table table-striped table-hover">
             {{#if headings}}
             <thead>
