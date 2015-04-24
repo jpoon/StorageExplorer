@@ -25,7 +25,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/:tableName', function (req, res, next) {
-    var tableHeadersTop = 25;
+    var takeWindow = 30;
 
     if (!req.params.tableName) {
         return next({ status: 400 });
@@ -39,35 +39,31 @@ router.get('/:tableName', function (req, res, next) {
             return next({ status: 500, message: error });
         }
 
-        // column heading
-        var peekSize = 30;
 
         var heading = [];
-        _(result.entries).slice(0, peekSize).forEach(function(row) {
-            _.map(Object.keys(row), function(key) {
+        _.take(result.entries, takeWindow).forEach(function (row) {
+            _.map(Object.keys(row), function (key) {
                 if (!_.isEqual(key, '.metadata')) {
-                    heading.push(_.camelCase(key));
+                    heading.push(key);
                 }
             });
-        }).value();
+        });
 
         var uniqueHeadings = _.unique(heading);
 
         var rows = []
-        result.entries.forEach(function (row) {
+        _.forEach(result.entries, function(row) {
             var parsedRow = {};
+            
+            _.forEach(uniqueHeadings, function (heading) {
+                var value = row[heading];
 
-            uniqueHeadings.forEach(function(header) {
-                parsedRow[header] = "";
-            });
-
-            for (var propertyName in row) {
-                var propertyValue = row[propertyName]._;
-
-                if (propertyName && propertyValue) {
-                    parsedRow[_.camelCase(propertyName)] = propertyValue;
+                if (value) {
+                    parsedRow[heading] = value._;
+                } else {
+                    parsedRow[heading] = "";
                 }
-            }
+            });
 
             rows.push(parsedRow);
         });

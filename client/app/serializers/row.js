@@ -2,18 +2,18 @@ import DS from 'ember-data';
 
 export default DS.RESTSerializer.extend(DS.EmbeddedRecordsMixin, {
 	normalize: function(type, hash) {
-  		hash.id = hash.partitionKey + '/' + hash.rowKey;
+  		hash.id = hash.PartitionKey + '/' + hash.RowKey;
 		return this._super(type, hash);
 	},
 
     normalizeRelationships: function(type, hash) {
         var store = this.store;
-     
+
         this._super(type, hash);
-     
+
         type.eachRelationship(function(attr, relationship) {
             var relatedTypeKey = relationship.type.typeKey;
-    
+
             if (relationship.options.embedded) {
                 if (relationship.kind === 'hasMany') {
                     hash[attr] = Object.keys(hash).map(function (key) {
