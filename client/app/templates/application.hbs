@@ -10,8 +10,7 @@
         </div>
         <div class="navbar-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="https://github.com/jpoon/StorageExplorer">GitHub</a></li>
-                <li><a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog">Security</a></li>
+                <li><a href="javascript:void(0)" data-toggle="modal" data-target="#complete-dialog">Security <i class="fa fa-lock"/></a></li>
             </ul>
         </div>
     </div>
@@ -39,20 +38,20 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <span>Storage Account Information</span>
+        <span class="panel-title">Storage Account Information</span>
     </div>
     <div class="panel-body">
         <form {{action "load" on="submit"}}>
             <div class="row">
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-4">
                     {{input value=storageAccountName type="text" class="form-control floating-label" placeholder="storage account name"}}
                 </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-8">
                     {{input value=storageAccountKey type="text" class="form-control floating-label" placeholder="storage account key"}}
                 </div>
             </div>
             <div class="row">
-                <div class="form-group col-xs-2 col-xs-offset-10 text-right">
+                <div class="form-group col-md-2 col-md-offset-10 text-right">
                     <button type="submit" {{bind-attr disabled=loadDisabled}} class="btn btn-primary btn-raised">Load</button>
                 </div>
             </div>
@@ -67,3 +66,15 @@
 {{/if}}
 
 {{outlet}}
+
+<footer class="panel-footer text-center">
+    <a title="GitHub" href="http://github.com/jpoon/StorageExplorer">
+        <i class="fa fa-fw fa-lg fa-github-square"></i>
+    </a>
+    <a title="Twitter" href="http://twitter.com/jasonthepoon">
+        <i class="fa fa-fw fa-lg fa-twitter-square"></i>
+    </a>
+    <a title="Webpage" href="http://jasonpoon.ca">
+        <i class="fa fa-fw fa-lg fa-globe"></i>
+    </a>
+</footer>
