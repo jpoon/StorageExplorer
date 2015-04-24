@@ -25,7 +25,9 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/:tableName', function (req, res, next) {
-    var takeWindow = 30;
+    var tableHeadersTop = 25;
+    // column heading
+    var peekSize = 25;
 
     if (!req.params.tableName) {
         return next({ status: 400 });
@@ -39,10 +41,9 @@ router.get('/:tableName', function (req, res, next) {
             return next({ status: 500, message: error });
         }
 
-
         var heading = [];
-        _.take(result.entries, takeWindow).forEach(function (row) {
-            _.map(Object.keys(row), function (key) {
+        _.take(result.entries, tableHeadersTop).forEach(function(row) {
+            _.map(Object.keys(row), function(key) {
                 if (!_.isEqual(key, '.metadata')) {
                     heading.push(key);
                 }
@@ -54,18 +55,25 @@ router.get('/:tableName', function (req, res, next) {
         var rows = []
         _.forEach(result.entries, function(row) {
             var parsedRow = {};
-            
-            _.forEach(uniqueHeadings, function (heading) {
-                var value = row[heading];
 
-                if (value) {
-                    parsedRow[heading] = value._;
+            console.log(row);
+            _.forEach(uniqueHeadings, function(header) {
+                var propertyName = header;
+                var propertyValue = row[header];
+
+                console.log(header);
+                if (propertyValue) {
+                    parsedRow[propertyName] = propertyValue._;
                 } else {
-                    parsedRow[heading] = "";
+                    parsedRow[propertyName] = "";
                 }
             });
 
             rows.push(parsedRow);
+        });
+
+        _.forEach(uniqueHeadings, function(element, index){
+             uniqueHeadings[index] = element;
         });
 
         res.status(200).json({
