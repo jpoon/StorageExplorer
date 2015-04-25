@@ -56,12 +56,10 @@ router.get('/:tableName', function (req, res, next) {
         _.forEach(result.entries, function(row) {
             var parsedRow = {};
 
-            console.log(row);
             _.forEach(uniqueHeadings, function(header) {
                 var propertyName = header;
                 var propertyValue = row[header];
 
-                console.log(header);
                 if (propertyValue) {
                     parsedRow[propertyName] = propertyValue._;
                 } else {

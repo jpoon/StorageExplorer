@@ -20,6 +20,12 @@ export default Ember.ObjectController.extend({
       sortBy: function(property) {
         this.set('sortProperty', property);
         this.set('sortAscending', !this.get('sortAscending'));
-      }
+      },
+
+      toggleColumnVisibility: function(heading, index) {
+        console.log(heading);
+        console.log(index);
+        console.log(this.get('model').get(heading));
+      },
     }
 });
