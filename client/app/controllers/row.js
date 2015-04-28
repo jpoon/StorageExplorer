@@ -6,11 +6,11 @@ export default Ember.ArrayController.extend({
     sortProperties: ['partitionKey'],
     sortAscending: true,
 
-    sortPropertiesComputed: function() {
+    _sortProperties: function() {
         this.set('sortProperties', [this.get('controllers.table.sortProperty')]);
     }.observes('controllers.table.sortProperty'),
 
-    sortAscendingComputed: function() {
+    _sortAscending: function() {
         this.set('sortAscending', this.get('controllers.table.sortAscending'));
     }.observes('controllers.table.sortAscending'),
 });
