@@ -25,15 +25,13 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/:tableName', function (req, res, next) {
-    var tableHeadersTop = 25;
-    // column heading
-    var peekSize = 25;
+    var tableHeadersPeekWindow = 25;
 
     if (!req.params.tableName) {
         return next({ status: 400 });
     }
 
-    var query = new azure.TableQuery().top(25);
+    var query = new azure.TableQuery().top(50);
 
     req.tableService.queryEntities(req.params.tableName, query, null, function (error, result, response) {
         if (error) {
@@ -42,7 +40,7 @@ router.get('/:tableName', function (req, res, next) {
         }
 
         var heading = [];
-        _.take(result.entries, tableHeadersTop).forEach(function(row) {
+        _.take(result.entries, tableHeadersPeekWindow).forEach(function(row) {
             _.map(Object.keys(row), function(key) {
                 if (!_.isEqual(key, '.metadata')) {
                     heading.push(key);

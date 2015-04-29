@@ -8,17 +8,18 @@
         </div>
     </div>
     <div id="collapseFilter" class="panel-collapse collapse">
-        <div class="panel-body table-responsive">
+        <div class="panel-body container-fluid">
             {{#if headings}}
+                <div class="row">
                 {{#each heading in headings}}
-                <div class="form-group">
+                <div class="form-group col-xs-12 col-sm-6 col-md-4 col-lg-3">
                     <label>
                         <input type="checkbox" checked {{action 'toggleColumnVisibility' heading _view.contentIndex on='change'}}>
                         {{heading}}
                     </label>
                 </div>
                 {{/each}}
-
+                </div>
                 {{toggle-checkbox}}
             {{/if}}
         </div>
