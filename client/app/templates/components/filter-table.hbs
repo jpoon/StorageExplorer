@@ -36,9 +36,9 @@
         <div class="panel-body">
             <div class="col-md-12">
                 <div class="input-group">
-                    {{input value=entityQuery type="text" class="form-control floating-label" placeholder="query (e.g. PartitionKey gt foo-bar)"}}
-                    <span class="input-group-btn"><button class="btn btn-primary" type="button" {{action 'query'}}>Go!</button></span>
-                    <span class="input-group-btn"><button class="btn btn-default" type="button" {{action 'reset'}}>Reset</button></span>
+                    {{input value=tableQuery type="text" class="form-control floating-label" placeholder="query (e.g. PartitionKey gt foo-bar)"}}
+                    <span class="input-group-btn"><button class="btn btn-primary" {{bind-attr disabled=queryDisabled}} type="button" {{action 'querySubmit'}}>Go!</button></span>
+                    <span class="input-group-btn"><button class="btn btn-default" type="button" {{action 'queryReset'}}>Reset</button></span>
                 </div>
             </div>
         </div>

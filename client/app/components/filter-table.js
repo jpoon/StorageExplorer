@@ -12,8 +12,28 @@ export default Ember.Component.extend({
       }
     }.property("sortAscending"),
 
+    queryDisabled: function() {
+      var tableQuery = this.get('tableQuery');
+
+      if (tableQuery) {
+        return false;
+      }
+
+      return true;
+    }.property('tableQuery'),
 
     actions: {
+        /* query */
+
+        querySubmit: function() {
+            //this.transitionTo({queryParams: {test: 'asc'}});
+        },
+
+        queryReset: function() {
+            this.set('tableQuery', '');
+        },
+
+        /* sorting */
         sortBy: function(property) {
             this.send('columnVisibilityReset');
 
@@ -22,6 +42,7 @@ export default Ember.Component.extend({
             this.sendAction('onSortPropertyChanged', property);
         },
 
+        /* filter */
         columnVisibilityToggle: function (columnName, columnIndex) {
             var checkbox = this.$('.column-filter input[data-column-index="'+columnIndex+'"]');
             this.send('columnVisibilitySet', columnIndex+2, !checkbox.is(':checked'));
