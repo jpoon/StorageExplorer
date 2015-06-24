@@ -54,10 +54,16 @@
         <tr>
             <th>#</th>
             {{#each heading in headings}}
-              <th nowrap {{action "sortBy" heading}}>
-                  <span {{bind-attr class=":glyphicon glyphiconDirection"}} aria-hidden="true" />
-                  {{heading}}
-              </th>
+              {{#if (is-column-sortable _view.contentIndex)}}
+                <th nowrap {{action "sortBy" heading}}>
+                    <span {{bind-attr class=":glyphicon glyphiconDirection"}} aria-hidden="true" />
+                    {{heading}}
+                </th>
+              {{else}}
+                <th nowrap>
+                    {{heading}}
+                </th>
+              {{/if}}
             {{/each}}
         </tr>
     </thead>
