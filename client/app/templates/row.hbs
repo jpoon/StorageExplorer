@@ -1,8 +1,10 @@
 {{#each row in arrangedContent}}
-    <tr>
-        <td>{{_view.contentIndex}}</td>
-        {{#each column in row.columns}}
+  <tr>
+    <td>{{_view.contentIndex}}</td>
+      {{#each column in row.columns}}
+        {{#if (should-display-column _view.contentIndex row.columns.length)}}
             <td>{{column.value}}</td>
-        {{/each}}
-    </tr>
+        {{/if}}
+    {{/each}}
+  </tr>
 {{/each}}
