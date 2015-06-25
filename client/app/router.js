@@ -6,9 +6,9 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-    this.resource("tables", { path: '/tables' }, function() {
-        this.resource("table", { path: "/:tableName" });
-    });
+  this.resource("tables", { path: '/tables' }, function() {
+    this.resource("table", { path: "/:tableName" });
+  });
 });
 
 export default Router;

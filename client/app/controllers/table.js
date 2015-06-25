@@ -1,20 +1,20 @@
 import Ember from 'ember';
 
 export default Ember.ObjectController.extend({
-    sortProperty: '',
-    sortAscending: true,
+  sortProperty: '',
+  sortAscending: true,
 
-    rowCount: function(){
-      return this.get('rows').length;
-    }.property('rows'),
+  rowCount: function() {
+    return this.get('rows').length;
+  }.property('rows'),
 
-    actions: {
-        setSortProperty: function(property) {
-            this.set('sortProperty', property);
-        },
+  actions: {
+    setSortProperty: function(property) {
+      this.set('sortProperty', property);
+    },
 
-        setSortAscending: function(sortAscending) {
-            this.set('sortAscending', sortAscending);
-        }
+    setSortAscending: function(sortAscending) {
+      this.set('sortAscending', sortAscending);
     }
+  }
 });
