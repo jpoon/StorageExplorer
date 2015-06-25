@@ -1,26 +1,41 @@
-﻿var debug = require('debug')('tables')
-    , tableServiceMiddleware = require('../middleware/tableService.js')
+var debug = require('debug')('tables')
+    , tableService = require('../provider/tableService.js')
     , _ = require('lodash')
     , azure = require('azure')
     , express = require('express')
     , router = express.Router();
 
-router.use(tableServiceMiddleware);
+router.use(function(req, res, next) {
+  var account = process.env.AZURE_STORAGE_ACCOUNT || req.query["account"] || req.headers["storage_account_name"];
+  var key = process.env.AZURE_STORAGE_ACCESS_KEY || req.query["key"] || req.headers["storage_account_key"];
+
+  tableService.create(account, key).then(function(tableServiceClient){
+    req.tableService = new tableService(tableServiceClient);
+    next();
+  }).catch(function(err){
+    return next({
+      status: 401,
+      message: err
+    });
+  });
+});
 
 router.get('/', function (req, res, next) {
-    req.tableService.listTablesSegmented(null, function (error, result, response) {
-        if (error) {
-            debug(error);
-            return next({ status: 500, message: error });
-        }
+    var id = req.query["id"];
 
-        var tableNames = _.map(result.entries.sort(), function (tableName) {
-            return { tableName: tableName };
-        });
+    if (id) {
+      return res.redirect('/tables/' + id);
+    }
 
-        res.status(200).json({
-            tables: tableNames
-        });
+    req.tableService.list().then(function(tableNames){
+      return res.status(200).json({
+        tables: tableNames
+      });
+    }).catch(function(err){
+      return next({
+        status: 500,
+        message: err
+      });
     });
 });
 
