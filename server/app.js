@@ -1,10 +1,11 @@
-﻿var debug = require('debug')('app')
+var debug = require('debug')('app')
     , express = require('express')
     , path = require('path')
     , favicon = require('serve-favicon')
     , logger = require('morgan')
     , cookieParser = require('cookie-parser')
-    , bodyParser = require('body-parser');
+    , bodyParser = require('body-parser')
+    , cors = require('cors');
 
 var routes = require('./routes/index');
 var tables = require('./routes/tables');
@@ -15,6 +16,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
