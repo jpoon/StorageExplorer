@@ -46,9 +46,9 @@ module.exports = function(environment) {
   }
 
   ENV.contentSecurityPolicy = {
-    'style-src': "'self' http://fonts.gstatic.com",
+    'style-src': "'self' http://fonts.gstatic.com http://fonts.googleapis.com",
     'font-src': "'self' http://fonts.gstatic.com",
-    'img-src': "'self' data:",
+    'img-src': "'self' data: http://www.google-analytics.com",
     'connect-src': "'self' http://localhost:3000",
   };
 
